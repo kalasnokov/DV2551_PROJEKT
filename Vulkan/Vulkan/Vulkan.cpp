@@ -6,8 +6,8 @@
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <vec4.hpp>
-#include <mat4x4.hpp>
+#include <GLM/vec4.hpp>
+#include <GLM/mat4x4.hpp>
 
 #include <iostream>
 #include <vector>
