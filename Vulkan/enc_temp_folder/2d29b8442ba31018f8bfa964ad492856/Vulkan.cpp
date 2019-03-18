@@ -15,16 +15,7 @@
 const int width = 800;
 const int height = 500;
 
-void checkExtentions() {
-	uint32_t extensionCount = 0;
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-	std::vector<VkExtensionProperties> extensions(extensionCount);
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
-	std::cout << "Available extensions:" << std::endl;
-	for (const auto& extension : extensions) {
-		std::cout << "\t" << extension.extensionName << std::endl;
-	}
-}
+
 
 class VA {
 public:
@@ -95,6 +86,16 @@ private:
 
 		if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
 			throw std::runtime_error("Failed to create instance!");
+		}
+
+		uint32_t extensionCount = 0;
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+		std::vector<VkExtensionProperties> extensions(extensionCount);
+		vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
+		std::cout << "available extensions:" << std::endl;
+
+		for (const auto& extension : extensions) {
+			std::cout << "\t" << extension.extensionName << std::endl;
 		}
 	}
 
