@@ -9,23 +9,21 @@ class threadPool
 private:
 	std::vector<std::thread> workers;
 	std::queue<std::function<void()>> work;
-	std::mutex queue_mutex;
+	std::mutex queueMutex;
+	std::condition_variable condition;
 	void infiniteLoop()
 	{
 		while (true)
 		{
-			std::function<void()> job = nullptr;
+			std::function<void()> job;
 			{
-				std::unique_lock<std::mutex> lock(queue_mutex);
-				if (!work.empty())
-				{
-					job = work.front();
-				}
+				std::unique_lock<std::mutex> lock(queueMutex);
+
+				condition.wait(lock, [this] {return !work.empty(); });
+				job = work.front();
+				work.pop();
 			}
-			if (job)
-			{
-				job();
-			}
+			job();
 		}
 	}
 public:
@@ -53,8 +51,9 @@ public:
 	void queueJob(std::function<void()> job)
 	{
 		{
-			std::unique_lock<std::mutex> lock(queue_mutex);
+			std::unique_lock<std::mutex> lock(queueMutex);
 			work.push(job);
+			condition.notify_one();
 		}
 	}
 };
