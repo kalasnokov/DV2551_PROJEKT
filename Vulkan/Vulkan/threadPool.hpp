@@ -22,7 +22,7 @@ private:
 					job = work.front();
 				}
 			}
-			if (!job)
+			if (job)
 			{
 				job();
 			}
