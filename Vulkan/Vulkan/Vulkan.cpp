@@ -1,6 +1,10 @@
 #include "pch.h"
 #include <iostream>
-
+#ifdef _WIN64
+#include <windows.h>
+#include <shlwapi.h>
+#pragma comment(lib,"Shlwapi.lib")
+#endif
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -12,6 +16,7 @@
 #include <iostream>
 #include <vector>
 #include <optional>
+#include <filesystem>
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -23,6 +28,24 @@ const int width = 800;
 const int height = 500;
 
 std::vector<VkExtensionProperties> extensions;
+void setExecutablePath()
+{
+#ifdef _WIN64
+
+		TCHAR path[MAX_PATH];
+		if (GetModuleFileName(NULL, path, MAX_PATH)) 
+		{
+			PathRemoveFileSpec(path); // remove executable name
+		}
+		std::basic_string<TCHAR> bPath(path);
+		std::filesystem::path p(bPath);
+		std::filesystem::current_path(p);
+
+#else
+
+#endif // _WIN64
+
+}
 
 
 const std::vector<const char*> validationLayers = {
@@ -67,7 +90,7 @@ class VA {
 public:
 	void run() {
 		std::cout << "Initializing...\n";
-
+		setExecutablePath();
 		checkExtentions();
 
 		initWindow();
