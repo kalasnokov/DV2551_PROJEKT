@@ -54,14 +54,6 @@ const std::vector<const char*> validationLayers = {
 
 struct QueueFamilyIndices {
 	std::optional<uint32_t> graphicsFamily;
-
-	bool isComplete() {
-		return graphicsFamily.has_value();
-	}
-};
-
-struct QueueFamilyIndices {
-	std::optional<uint32_t> graphicsFamily;
 	std::optional<uint32_t> presentFamily;
 
 	bool isComplete() {
