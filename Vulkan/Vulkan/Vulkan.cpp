@@ -17,6 +17,7 @@
 #include <vector>
 #include <optional>
 #include <filesystem>
+#include "threadPool.hpp"
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -106,7 +107,7 @@ public:
 
 		initWindow();
 		initVulkan();
-
+		threadPool pool;
 		std::cout << "Initialization successful.\n";
 
 		mainLoop();
