@@ -167,8 +167,6 @@ private:
 		presentInfo.pResults = nullptr;
 
 		vkQueuePresentKHR(presentQueue, &presentInfo);
-
-		vkQueueWaitIdle(presentQueue);//waitForGPU()?
 	}
 
 	void initVulkan() {
