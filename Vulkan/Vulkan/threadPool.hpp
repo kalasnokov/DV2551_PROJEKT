@@ -43,10 +43,6 @@ public:
 	}
 	~threadPool()
 	{
-		for (auto &worker : workers)
-		{
-			worker.join();
-		}
 	}
 	void queueJob(std::function<void()> job)
 	{
