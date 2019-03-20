@@ -18,7 +18,7 @@
 #include <optional>
 #include <filesystem>
 #include "threadPool.hpp"
-
+using namespace std::chrono_literals;
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else
@@ -78,10 +78,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 		func(instance, debugMessenger, pAllocator);
 	}
 }
-void count()
-{
-	std::cout << "I am running from the pool" << std::endl;
-}
+
 class VA {
 public:
 	void run() {

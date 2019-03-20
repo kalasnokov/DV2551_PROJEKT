@@ -56,4 +56,11 @@ public:
 			condition.notify_one();
 		}
 	}
+	void wait()
+	{
+		while (!work.empty())
+		{
+
+		}
+	}
 };
