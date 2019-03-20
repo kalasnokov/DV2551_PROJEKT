@@ -132,16 +132,22 @@ private:
 
 	void initVulkan() {
 		createInstance();
+
 		setupDebugMessenger();
+
 		createSurface();
+
 		pickPhysicalDevice();
+
 		createLogicalDevice();
 		createSwapChain();
 		createImageViews();
+
+		createGraphicsPipeline();
 	}
 
 	void cleanup() {
-		std::cout << "Cleanup...\n";
+		std::cout << "Cleanup starting...\n";
 
 		for (auto imageView : swapChainImageViews) {
 			vkDestroyImageView(device, imageView, nullptr);
@@ -162,6 +168,10 @@ private:
 		glfwTerminate();
 
 		std::cout << "Cleanup complete.\n";
+	}
+
+	void createGraphicsPipeline() {
+
 	}
 
 	void createImageViews() {
