@@ -142,7 +142,7 @@ public:
 		initVulkan();
 		threadPool pool; //causes abort() call on exit
 		std::cout << "Initialization successful.\n";
-		generator.setDevice(device);
+		generator.setDevice(device, queue);
 		generator.setUp();
 		mainLoop();
 
