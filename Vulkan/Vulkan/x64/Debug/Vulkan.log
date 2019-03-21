@@ -1,0 +1,5 @@
+﻿  terrainGenerator.cpp
+  Vulkan.cpp
+  Generating Code...
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  Vulkan.vcxproj -> D:\Skola\DV2551 - 3D 3\DV2551_PROJEKT\Vulkan\x64\Debug\Vulkan.exe

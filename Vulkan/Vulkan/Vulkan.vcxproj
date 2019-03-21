@@ -172,6 +172,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="terrainGenerator.hpp" />
     <ClInclude Include="threadPool.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +182,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="terrainGenerator.cpp" />
     <ClCompile Include="Vulkan.cpp" />
   </ItemGroup>
   <ItemGroup>
