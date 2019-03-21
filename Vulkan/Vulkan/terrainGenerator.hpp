@@ -7,7 +7,10 @@ const size_t max_chunks = 100;
 class terrainGenerator
 {
 private:
-	VkDevice device;
+	struct memory
+	{
+
+	};
 public:
 	void setDevice(VkDevice &dev);
 	void setUp();
