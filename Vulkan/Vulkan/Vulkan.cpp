@@ -22,6 +22,7 @@
 
 #include <filesystem>
 #include "threadPool.hpp"
+#include "terrainGenerator.hpp"
 using namespace std::chrono_literals;
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -140,7 +141,8 @@ public:
 		initVulkan();
 		threadPool pool; //causes abort() call on exit
 		std::cout << "Initialization successful.\n";
-
+		generator.setDevice(device);
+		generator.setUp();
 		mainLoop();
 
 		cleanup();
@@ -1196,6 +1198,7 @@ private:
 	VkDeviceMemory vertexBufferMemory;
 
 	bool framebufferResized = false;
+	terrainGenerator generator;
 };
 
 
