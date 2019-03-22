@@ -4,7 +4,7 @@
 
 void terrainGenerator::setDevice(VkDevice & dev)
 {
-	device = dev;
+	//device = dev;
 }
 
 void terrainGenerator::setUp()
