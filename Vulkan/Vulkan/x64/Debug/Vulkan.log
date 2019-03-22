@@ -1,2 +1,4 @@
 ﻿  Vulkan.cpp
-  Vulkan.vcxproj -> C:\Users\gusta\Documents\GitHub\DV2551_PROJEKT\Vulkan\x64\Debug\Vulkan.exe
+  terrainGenerator.cpp
+c:\users\gusta\documents\github\dv2551_projekt\vulkan\vulkan\terraingenerator.cpp(7): error C2065: 'device': undeclared identifier
+  Generating Code...
