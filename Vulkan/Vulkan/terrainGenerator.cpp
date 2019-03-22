@@ -2,16 +2,15 @@
 #include "terrainGenerator.hpp"
 
 
-void terrainGenerator::setDevice(VkDevice & dev)
-{
-	//device = dev;
-}
 
-void terrainGenerator::setUp()
+void terrainGenerator::setUp(dataObjects * dataObjects)
 {
-	//Map memory
-	//Load Generation shader
-	//Other things?
+	dataObjectptr = dataObjects;
+	auto physicalDevice = dataObjects->physicalDevice;
+	auto instance = dataObjects->instance;
+
+	VkDeviceCreateInfo createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 }
 
 terrainGenerator::terrainGenerator() {}

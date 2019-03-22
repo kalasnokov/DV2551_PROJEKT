@@ -1,6 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.hpp>
-
+#include "dataObjects.hpp"
 const size_t chunk_size = 64;
 const size_t max_chunks = 250;
 const size_t gpuMemoryRequired = (chunk_size * chunk_size) * (sizeof(float) * 2);
@@ -28,15 +28,11 @@ const size_t maxRamRequired = gpuMemoryRequired * max_chunks;
 class terrainGenerator
 {
 private:
-	
-	struct chunk
-	{
-
-	};
-	VkDevice device;
+	VkQueue computeQueue;
+	VkDevice computeDevice;
+	dataObjects *dataObjectptr;
 public:
-	void setDevice(VkDevice &dev);
-	void setUp();
+	void setUp(dataObjects *dataObjects);
 	terrainGenerator();
 	~terrainGenerator();
 };
