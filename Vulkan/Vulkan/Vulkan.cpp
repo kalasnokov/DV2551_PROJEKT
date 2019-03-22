@@ -26,6 +26,7 @@
 #include "threadPool.hpp"
 #include "terrainGenerator.hpp"
 #include "VHF.hpp"
+#include "dataObjects.hpp"
 using namespace std::chrono_literals;
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -168,7 +169,7 @@ public:
 
 	}
 
-	VHF::dataObjects DO;
+	dataObjects DO;
 
 private:
 

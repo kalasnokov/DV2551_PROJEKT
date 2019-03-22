@@ -3,9 +3,10 @@
 
 
 
-void terrainGenerator::setUp(VHF::dataObjects * dataObjects)
+void terrainGenerator::setUp(dataObjects * dataObjects)
 {
 	dataObjectptr = dataObjects;
+
 }
 
 terrainGenerator::terrainGenerator() {}
