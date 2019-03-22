@@ -28,7 +28,8 @@ const size_t maxRamRequired = gpuMemoryRequired * max_chunks;
 class terrainGenerator
 {
 private:
-
+	VkQueue computeQueue;
+	VkDevice computeDevice;
 	dataObjects *dataObjectptr;
 public:
 	void setUp(dataObjects *dataObjects);

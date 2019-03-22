@@ -171,6 +171,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="dataObjects.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="terrainGenerator.hpp" />
     <ClInclude Include="threadPool.hpp" />
