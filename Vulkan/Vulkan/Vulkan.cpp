@@ -10,6 +10,7 @@
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 #include <GLM/vec4.hpp>
 #include <GLM/mat4x4.hpp>
 
@@ -19,7 +20,7 @@
 #include <set>
 #include <fstream>
 #include <array>
-
+#include <chrono>
 #include <filesystem>
 #include "threadPool.hpp"
 #include "terrainGenerator.hpp"
@@ -169,9 +170,17 @@ private:
 	}
 
 	void mainLoop() {
+		auto prevtime = std::chrono::high_resolution_clock::now();
+		unsigned frameCount = 0;
 		while (!glfwWindowShouldClose(window)) {
+			prevtime = std::chrono::high_resolution_clock::now();
+			frameCount++;
 			glfwPollEvents();
 			drawFrame();
+			auto now = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> elapsed = now - prevtime;
+			std::string title = "Vulkan Terrain-Generator " + std::to_string(elapsed.count());
+			glfwSetWindowTitle(window, title.c_str());
 		}
 
 		vkDeviceWaitIdle(device);
