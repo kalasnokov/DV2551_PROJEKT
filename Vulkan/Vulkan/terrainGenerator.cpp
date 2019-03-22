@@ -2,16 +2,10 @@
 #include "terrainGenerator.hpp"
 
 
-void terrainGenerator::setDevice(VkDevice & dev)
-{
-	//device = dev;
-}
 
-void terrainGenerator::setUp()
+void terrainGenerator::setUp(VHF::dataObjects * dataObjects)
 {
-	//Map memory
-	//Load Generation shader
-	//Other things?
+	dataObjectptr = dataObjects;
 }
 
 terrainGenerator::terrainGenerator() {}

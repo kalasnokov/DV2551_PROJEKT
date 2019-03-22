@@ -21,7 +21,25 @@
 #include <array>
 
 namespace VHF {//Vulkan Helper Functions
+	struct dataObjects {
+		VkInstance instance;
 
+		VkDevice device;
+		VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+
+		VkQueue graphicsQueue;
+
+		VkCommandPool commandPool;
+		std::vector<VkCommandBuffer> commandBuffers;
+
+
+		VkDescriptorSetLayout descriptorSetLayout;
+		VkDescriptorPool descriptorPool;
+		std::vector<VkDescriptorSet> descriptorSets;
+
+		VkDebugUtilsMessengerEXT debugMessenger;
+
+	};
 	uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties) {
 		VkPhysicalDeviceMemoryProperties memProperties;
 		vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);

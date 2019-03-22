@@ -1,4 +1,5 @@
 #pragma once
+#include "VHF.hpp"
 #include <vulkan/vulkan.hpp>
 
 const size_t chunk_size = 64;
@@ -28,15 +29,10 @@ const size_t maxRamRequired = gpuMemoryRequired * max_chunks;
 class terrainGenerator
 {
 private:
-	
-	struct chunk
-	{
 
-	};
-	VkDevice device;
+	VHF::dataObjects *dataObjectptr;
 public:
-	void setDevice(VkDevice &dev);
-	void setUp();
+	void setUp(VHF::dataObjects *dataObjects);
 	terrainGenerator();
 	~terrainGenerator();
 };
