@@ -40,4 +40,6 @@ namespace VHF {//Vulkan Helper Functions
 	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
 
 	bool isDeviceSuitable(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
+
+	uint32_t findQueueFamily(VkPhysicalDevice physicalDevice, VkQueueFlagBits queueType);
 }

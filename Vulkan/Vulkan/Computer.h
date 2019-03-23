@@ -5,7 +5,7 @@
 class Computer
 {
 public:
-	Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize);
+	Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize, uint32_t height, uint32_t width, uint32_t workForce);
 
 	void setupBuffers();
 
@@ -49,5 +49,9 @@ private:
 	uint32_t queueFamilyIndex;
 
 	VkShaderModule shader;
+
+	uint32_t height;
+	uint32_t width;
+	uint32_t workForceGroupSize;
 };
 

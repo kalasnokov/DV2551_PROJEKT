@@ -203,3 +203,27 @@ bool VHF::isDeviceSuitable(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface
 
 	return indices.isComplete() && extensionsSupported && swapChainAdequate;
 }
+
+uint32_t VHF::findQueueFamily(VkPhysicalDevice physicalDevice, VkQueueFlagBits queueType) {
+	uint32_t queueFamilyCount;
+
+	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, NULL);
+
+	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
+
+	uint32_t i = 0;
+	for (; i < queueFamilies.size(); ++i) {
+		VkQueueFamilyProperties props = queueFamilies[i];
+
+		if (props.queueCount > 0 && (props.queueFlags & queueType)) {
+			break;
+		}
+	}
+
+	if (i == queueFamilies.size()) {
+		throw std::runtime_error("No queue family with specified type found!");
+	}
+
+	return i;
+}

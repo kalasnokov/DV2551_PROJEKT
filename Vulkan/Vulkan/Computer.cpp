@@ -2,13 +2,19 @@
 #include "Computer.h"
 
 
-Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize){
+Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize, uint32_t height, uint32_t width, uint32_t workForceGroupSize){
 	this->device = device;
 	this->physicalDevice = physicalDevice;
+
+	this->height = height;
+	this->width = width;
+	this->workForceGroupSize = workForceGroupSize;
 
 	inBufferSize = inBufSize;
 	outBufferSize = outBufSize;
 
+	queueFamilyIndex = VHF::findQueueFamily(*physicalDevice, VK_QUEUE_COMPUTE_BIT);
+	std::cout << "COMPUTER: QUEUEFAMILYINDEX SET!\n";
 	setupBuffers();
 	std::cout << "COMPUTER: BUFFERS SET!\n";
 	loadShader(shaderLoc);
@@ -42,6 +48,33 @@ void Computer::commandBufferSetup() {
 	commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	commandPoolCreateInfo.flags = 0;
 	commandPoolCreateInfo.queueFamilyIndex = queueFamilyIndex;
+
+	if (vkCreateCommandPool(*device, &commandPoolCreateInfo, NULL, &commandPool) != VK_SUCCESS) {
+		throw std::runtime_error("COMPUTER ERROR: FAILED TO CREATE COMMANDPOOL!");
+	}
+
+	VkCommandBufferAllocateInfo commandBufferAllocateInfo = {};
+	commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	commandBufferAllocateInfo.commandPool = commandPool;
+	commandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	commandBufferAllocateInfo.commandBufferCount = 1;
+
+	if (vkAllocateCommandBuffers(*device, &commandBufferAllocateInfo, &commandBuffer) != VK_SUCCESS) {
+		throw std::runtime_error("COMPUTER ERROR: FAILED TO ALLOCATE COMMAND BUFFERS!");
+	}
+
+	VkCommandBufferBeginInfo beginInfo = {};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSet, 0, NULL);
+
+		vkCmdDispatch(commandBuffer, (uint32_t)ceil(width / float(workForceGroupSize)), (uint32_t)ceil(height / float(workForceGroupSize)), 1);
+
+	vkEndCommandBuffer(commandBuffer);
 }
 
 void Computer::descriptorSetup() {
