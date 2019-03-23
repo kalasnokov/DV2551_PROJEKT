@@ -189,6 +189,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\compiler.bat" />
+    <None Include="Shaders\computeMesh.comp" />
     <None Include="Shaders\fragment.frag" />
     <None Include="Shaders\vertex.vert" />
   </ItemGroup>

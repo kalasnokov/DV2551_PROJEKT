@@ -13,7 +13,6 @@ struct dataObjects {
 	VkCommandPool commandPool;
 	std::vector<VkCommandBuffer> commandBuffers;
 
-
 	VkDescriptorSetLayout descriptorSetLayout;
 	VkDescriptorPool descriptorPool;
 	std::vector<VkDescriptorSet> descriptorSets;

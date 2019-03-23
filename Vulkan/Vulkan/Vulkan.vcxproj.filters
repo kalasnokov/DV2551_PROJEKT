@@ -55,5 +55,8 @@
     <None Include="Shaders\vertex.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\computeMesh.comp">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
