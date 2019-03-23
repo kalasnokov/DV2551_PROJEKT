@@ -28,8 +28,7 @@ float normalizef(float value, float min, float max)
 
 void main() 
 {
-	float currheightmap[chunk_size * chunk_size] = heightmap[gl_WorkGroupSize.x * (chunk_size * chunk_size)];
-	float height = normalizef(currheightmap[gl_WorkGroupSize.y * gl_WorkGroupSize.z], 0, 12);
+	float height = normalizef(heightmap[gl_WorkGroupSize.x * (chunk_size * chunk_size) * (gl_WorkGroupSize.y * gl_WorkGroupSize.z)], 0, 12);
 	vertex v;
 	float chunkOffset = gl_WorkGroupSize.x * realWorldDistance;
 	v.pos = vec3(chunkOffset * gl_WorkGroupSize.y * realWorldDistance, chunkOffset * gl_WorkGroupSize.z * realWorldDistance, height * realWorldDistance);
