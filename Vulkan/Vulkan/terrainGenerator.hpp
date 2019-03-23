@@ -3,7 +3,7 @@
 #include "dataObjects.hpp"
 #include "vulkanBufferWrapper.hpp"
 const int32_t chunk_size = 64;
-const size_t gpuMemoryRequired = (chunk_size * chunk_size) * (sizeof(float) * 2);
+const size_t gpuMemoryRequired = ((chunk_size * chunk_size) * (sizeof(float)) * 9) / 1000;
 /*
 	NOTES:
 
@@ -40,7 +40,7 @@ private:
 	} compute;
 	struct chunk
 	{
-		float height[chunk_size * chunk_size];
+		float height[chunk_size][chunk_size];
 	};
 	dataObjects *dataObjectptr;
 public:
