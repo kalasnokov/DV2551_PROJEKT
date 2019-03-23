@@ -148,7 +148,7 @@ public:
 		generator.setUp(&DO);
 
 
-		Computer* computer = new Computer(&DO.device, &DO.physicalDevice, "../../Vulkan/Shaders/computeMesh.spv", 1024 * sizeof(int), 1024 * sizeof(int), 16, 16, 64);
+		Computer* computer = new Computer(&DO.device, &DO.physicalDevice, "../../Vulkan/Shaders/computeMesh.spv", 1024 * sizeof(int), 1024 * sizeof(int));
 
 		mainLoop();
 
