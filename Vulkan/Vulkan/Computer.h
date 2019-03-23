@@ -11,6 +11,8 @@ public:
 
 	void commandBufferSetup();
 
+	void descriptorLayoutSetup();
+
 	void descriptorSetup();
 
 	void pipelineSetup();

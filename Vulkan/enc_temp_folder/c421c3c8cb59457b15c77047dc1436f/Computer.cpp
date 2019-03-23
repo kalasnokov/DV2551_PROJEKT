@@ -19,7 +19,7 @@ Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, std::stri
 	std::cout << "COMPUTER: BUFFERS SET!\n";
 	loadShader(shaderLoc);
 	std::cout << "COMPUTER: SHADER LOADED!\n";
-	descriptorSetup();
+	descriptorLayoutSetup();
 	std::cout << "COMPUTER: DESCRIPTORS SET!\n";
 	pipelineSetup();
 	std::cout << "COMPUTER: PIPELINE SET!\n";
@@ -70,14 +70,14 @@ void Computer::commandBufferSetup() {
 	vkBeginCommandBuffer(commandBuffer, &beginInfo);
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSet, 0, NULL);
+		//vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSet, 0, NULL);
 
-		vkCmdDispatch(commandBuffer, (uint32_t)ceil(width / float(workForceGroupSize)), (uint32_t)ceil(height / float(workForceGroupSize)), 1);
+		//vkCmdDispatch(commandBuffer, (uint32_t)ceil(width / float(workForceGroupSize)), (uint32_t)ceil(height / float(workForceGroupSize)), 1);
 
 	vkEndCommandBuffer(commandBuffer);
 }
 
-void Computer::descriptorSetup() {
+void Computer::descriptorLayoutSetup() {
 	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding[2];
 	descriptorSetLayoutBinding[0].binding = 0;
 	descriptorSetLayoutBinding[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -96,8 +96,19 @@ void Computer::descriptorSetup() {
 
 	// Create the descriptor set layout. 
 	if (vkCreateDescriptorSetLayout(*device, &descriptorSetLayoutCreateInfo, NULL, &descriptorSetLayout) != VK_SUCCESS) {
-		throw std::runtime_error("COMPUTER ERROR: FAILED TO SETUP DESCRIPTOR!");
+		throw std::runtime_error("COMPUTER ERROR: FAILED TO SETUP DESCRIPTORLAYOUT!");
 	}
+}
+
+void Computer::descriptorSetup() {
+	VkDescriptorPoolSize descriptorPoolSize[2];
+	descriptorPoolSize[0].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+	descriptorPoolSize[0].descriptorCount = 1;
+
+	descriptorPoolSize[1].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+	descriptorPoolSize[1].descriptorCount = 1;
+
+
 }
 
 void Computer::pipelineSetup() {
