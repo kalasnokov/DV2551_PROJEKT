@@ -25,8 +25,11 @@
 #include <filesystem>
 #include "threadPool.hpp"
 #include "terrainGenerator.hpp"
-#include "VHF.hpp"
+#include "VHF.h"
 #include "dataObjects.hpp"
+
+#include "computer.h"
+
 using namespace std::chrono_literals;
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -143,6 +146,10 @@ public:
 		threadPool pool; //causes abort() call on exit
 		std::cout << "Initialization successful.\n";
 		generator.setUp(&DO);
+
+
+		Computer* computer = new Computer(&DO.device, &DO.physicalDevice, "../../Vulkan/Shaders/computeMesh.spv");
+
 		mainLoop();
 
 		cleanup();
@@ -866,11 +873,11 @@ private:
 	}
 
 	void createGraphicsPipeline() {
-		auto vertShaderCode = readFile("../../Vulkan/Shaders/vert.spv");
-		auto fragShaderCode = readFile("../../Vulkan/Shaders/frag.spv");
+		auto vertShaderCode = VHF::readFile("../../Vulkan/Shaders/vert.spv");
+		auto fragShaderCode = VHF::readFile("../../Vulkan/Shaders/frag.spv");
 
-		VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
-		VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
+		VkShaderModule vertShaderModule = VHF::createShaderModule(DO.device, vertShaderCode);
+		VkShaderModule fragShaderModule = VHF::createShaderModule(DO.device, fragShaderCode);
 
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
 		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -1016,20 +1023,6 @@ private:
 
 		vkDestroyShaderModule(DO.device, fragShaderModule, nullptr);
 		vkDestroyShaderModule(DO.device, vertShaderModule, nullptr);
-	}
-
-	VkShaderModule createShaderModule(const std::vector<char>& code) {
-		VkShaderModuleCreateInfo createInfo = {};
-		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		createInfo.codeSize = code.size();
-		createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
-
-		VkShaderModule shaderModule;
-		if (vkCreateShaderModule(DO.device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
-			throw std::runtime_error("Failed to create shader module!");
-		}
-
-		return shaderModule;
 	}
 
 	void createImageViews() {
@@ -1352,27 +1345,6 @@ private:
 		}
 	}
 
-	static std::vector<char> readFile(const std::string& filename) {
-		std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-		if (!file.is_open()) {
-			throw std::runtime_error("Failed to open file!");
-		}
-		else {
-			std::cout << "Loaded " << filename << " successfully.\n";
-		}
-
-		size_t fileSize = (size_t)file.tellg();
-		std::vector<char> buffer(fileSize);
-
-		file.seekg(0);
-		file.read(buffer.data(), fileSize);
-
-		file.close();
-
-		return buffer;
-	}
-
 	//GLFW variabels
 	GLFWwindow* window;
 
@@ -1423,7 +1395,6 @@ private:
 int main() {
 	
 	VA application;
-
 	try {
 		application.run();
 	} catch (const std::exception& e) {

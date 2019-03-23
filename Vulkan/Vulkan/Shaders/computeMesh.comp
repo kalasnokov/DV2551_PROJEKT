@@ -1,5 +1,12 @@
 #version 450
 
+layout(push_constant) uniform Parameters {
+   uint Width;
+   uint Height;
+	float a;
+} params;
+
+
 void main() {
 
 }

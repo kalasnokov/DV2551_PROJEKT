@@ -27,10 +27,13 @@
     <ClInclude Include="terrainGenerator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VHF.hpp">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Computer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dataObjects.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VHF.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -42,6 +45,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="terrainGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Computer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VHF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
