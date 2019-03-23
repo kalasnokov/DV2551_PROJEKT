@@ -5,7 +5,9 @@
 class Computer
 {
 public:
-	Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, std::string shaderLoc);
+	Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize);
+
+	void setupBuffers();
 
 	void commandBufferSetup();
 
@@ -21,7 +23,15 @@ private:
 	VkDevice* device;
 	VkPhysicalDevice* physicalDevice;
 
-	VkBuffer inData;
+	VkBuffer inBuffer;
+	VkBuffer outBuffer;
+
+	uint32_t inBufferSize;
+	uint32_t outBufferSize;
+
+	VkDeviceMemory inBufferMem;
+	VkDeviceMemory outBufferMem;
+
 	VkBuffer uniforms;
 
 	VkQueue queue;
@@ -33,7 +43,7 @@ private:
 	VkDescriptorSet descriptorSet;
 
 	VkPipelineLayout pipelineLayout;
-	std::vector<VkPipeline> pipelines;
+	VkPipeline pipeline;
 	int32_t pipelineIndex = 0;
 
 	uint32_t queueFamilyIndex;

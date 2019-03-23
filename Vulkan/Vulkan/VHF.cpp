@@ -57,7 +57,7 @@ void VHF::createBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkDevic
 	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
 	if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
-		throw std::runtime_error("failed to create buffer!");
+		throw std::runtime_error("Failed to create buffer!");
 	}
 
 	VkMemoryRequirements memRequirements;
@@ -69,7 +69,7 @@ void VHF::createBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkDevic
 	allocInfo.memoryTypeIndex = findMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
 
 	if (vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
-		throw std::runtime_error("failed to allocate buffer memory!");
+		throw std::runtime_error("Failed to allocate buffer memory!");
 	}
 
 	vkBindBufferMemory(device, buffer, bufferMemory, 0);
