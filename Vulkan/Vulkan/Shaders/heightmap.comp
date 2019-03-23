@@ -6,6 +6,12 @@ layout(std430, binding = 0) buffer lay0 //Output
 { 
 	float heightmap[9][chunk_size][chunk_size];
 };
+layout(push_constant) uniform Parameters 
+{
+	float seed;
+	int chunkID;
+} params;
+
 // Simplex 2D noise
 //
 vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
@@ -59,7 +65,9 @@ void main()
 		for(int y = 0; y < chunk_size; y++)
 		{
 			//Write to the buffer
-			heightmap[gl_WorkGroupSize.x][x][y] = pow(pow(noise(vec2(x,y)) + noise(vec2(x,y)),1.5) + 0.3 * simplex(vec2(x,y)),0.5);
+			float n1 = float(params.chunkID) * params.seed * float(x);
+			float n2 = float(params.chunkID) * params.seed * float(y);
+			heightmap[gl_WorkGroupSize.x][x][y] = pow(pow(noise(vec2(n1,n2)) + noise(vec2(n1,n2)),1.5) + 0.3 * simplex(vec2(n1,n2)),0.5);
 		}
 	}
 }
