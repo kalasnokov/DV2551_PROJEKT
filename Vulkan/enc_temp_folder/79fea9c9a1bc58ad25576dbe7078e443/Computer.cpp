@@ -2,9 +2,13 @@
 #include "Computer.h"
 
 
-Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize){
+Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize, uint32_t height, uint32_t width, uint32_t workForceGroupSize){
 	this->device = device;
 	this->physicalDevice = physicalDevice;
+
+	this->height = height;
+	this->width = width;
+	this->workForceGroupSize = workForceGroupSize;
 
 	inBufferSize = inBufSize;
 	outBufferSize = outBufSize;
@@ -58,6 +62,19 @@ void Computer::commandBufferSetup() {
 	if (vkAllocateCommandBuffers(*device, &commandBufferAllocateInfo, &commandBuffer) != VK_SUCCESS) {
 		throw std::runtime_error("COMPUTER ERROR: FAILED TO ALLOCATE COMMAND BUFFERS!");
 	}
+
+	VkCommandBufferBeginInfo beginInfo = {};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSet, 0, NULL);
+
+		vkCmdDispatch(commandBuffer, (uint32_t)ceil(width / float(workForceGroupSize)), (uint32_t)ceil(height / float(workForceGroupSize)), 1);
+
+	vkEndCommandBuffer(commandBuffer);
 }
 
 void Computer::descriptorSetup() {

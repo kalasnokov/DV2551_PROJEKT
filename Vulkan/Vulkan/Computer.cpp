@@ -67,14 +67,14 @@ void Computer::commandBufferSetup() {
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+	/*vkBeginCommandBuffer(commandBuffer, &beginInfo);
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSet, 0, NULL);
 
 		vkCmdDispatch(commandBuffer, (uint32_t)ceil(width / float(workForceGroupSize)), (uint32_t)ceil(height / float(workForceGroupSize)), 1);
 
-	vkEndCommandBuffer(commandBuffer);
+	vkEndCommandBuffer(commandBuffer);*/
 }
 
 void Computer::descriptorSetup() {
