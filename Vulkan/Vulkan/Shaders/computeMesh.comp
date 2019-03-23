@@ -47,4 +47,6 @@ void main()
 		v.color = vec3(183.0, 147.0, 141.0);
 	else
 		v.color = vec3(47.0, 75.0, 145.0);
+
+	verticesOut[gl_LocalInvocationIndex] = v;
 }

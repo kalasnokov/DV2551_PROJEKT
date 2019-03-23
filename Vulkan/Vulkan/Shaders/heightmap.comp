@@ -1,4 +1,6 @@
 #version 450
+#define chunk_size 64
+layout(local_size_x_id = 9, local_size_y_id = samplingPoints, local_size_y_id = samplingPoints) in;
 #extension GL_ARB_separate_shader_objects : enable
 
 // Simplex 2D noise
