@@ -1,23 +1,14 @@
 #pragma once
 #include <vulkan/vulkan.hpp>
 #include "dataObjects.hpp"
-const size_t chunk_size = 64;
-const size_t max_chunks = 250;
+#include "vulkanBufferWrapper.hpp"
+const int32_t chunk_size = 64;
 const size_t gpuMemoryRequired = (chunk_size * chunk_size) * (sizeof(float) * 2);
-const size_t maxRamRequired = gpuMemoryRequired * max_chunks;
 /*
 	NOTES:
 
-	Generera ett sjukt stort block av minne på GPUn, något sätt måste de vara numrerade så att vi kan veta vilka chunks vi kan ladda över till ram
-
-	Eventuellt för att spara på minne, ha bara 3 chunks bakom spelaren laddat i VRAM istället för 6.
-
 	On the fly generering av verticer kommer vara väldigt redundant, men sparar på minne. Borde inte vara speciellt svårt, bara att hitta 
 	en bra ratio på hur många verticer och distansen mellan dem och därmed generera en mesh
-
-	Om vi verkligen vill att världen skall vara oändlig måste vi även tänka på vanligt ram och inte bara VRAM
-	det betyder att vi måste använda samma seed för chunksen så att vi kan ladda ur dem ur ram och sedan återskapa dem när det behövs. Antingen det eller ha
-	ett max-chunk värde 
 
 	Vi måste skicka med 5 chunks till renderingPipelinen och sedan INNAN vi skapar våra verticer, culla bort saker som spelaren inte kan se
 	då annars blir det väldigt många verticer per frame. Also, detta är reduntant af då vi kommer beräkna samma verticer om och om igen. 
@@ -28,8 +19,29 @@ const size_t maxRamRequired = gpuMemoryRequired * max_chunks;
 class terrainGenerator
 {
 private:
-	VkQueue computeQueue;
-	VkDevice computeDevice;
+	float seed;
+	struct {
+		BufferW storageBuffer;					// (Shader) storage buffer object containing the chunks
+		BufferW uniformBuffer;					// Uniform buffer object containing particle system parameters
+		VkQueue queue;								// Separate queue for compute commands (queue family may differ from the one used for graphics)
+		VkCommandPool commandPool;					// Use a separate command pool (queue family may differ from the one used for graphics)
+		VkCommandBuffer commandBuffer;				// Command buffer storing the dispatch commands and barriers
+		VkFence fence;								// Synchronization fence to avoid rewriting compute CB if still in use
+		VkDescriptorSetLayout descriptorSetLayout;	// Compute shader binding layout
+		VkDescriptorSet descriptorSet;				// Compute shader bindings
+		VkPipelineLayout pipelineLayout;			// Layout of the compute pipeline
+		VkPipeline pipeline;						// Compute pipeline for updating particle positions
+		struct computeUBO {							// Compute shader uniform block object
+			float seed;							//		Frame delta time
+			float chunkX;							//		x position of the attractor
+			float chunkY;							//		y position of the attractor
+			int32_t chunkSize = chunk_size;
+		} ubo;
+	} compute;
+	struct chunk
+	{
+		float height[chunk_size * chunk_size];
+	};
 	dataObjects *dataObjectptr;
 public:
 	void setUp(dataObjects *dataObjects);
