@@ -23,7 +23,6 @@ struct dataObjects {
 };
 
 struct computeObjects {
-	VkDevice device;
 	VkBuffer data;
 	VkBuffer uniforms;
 	VkQueue queue;

@@ -175,7 +175,6 @@ namespace VHF {//Vulkan Helper Functions
 		return details;
 	}
 
-	
 	bool isDeviceSuitable(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface) {
 		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface);
 
