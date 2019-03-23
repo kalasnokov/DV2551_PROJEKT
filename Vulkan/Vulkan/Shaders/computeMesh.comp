@@ -26,7 +26,7 @@ void main()
 	float currheightmap[chunk_size][chunk_size] = heightmap[gl_WorkGroupSize.x];
 	float height = normalizef(currheightmap[gl_WorkGroupSize.y][gl_WorkGroupSize.z], 0, 1);
 	vertex v;
-	v.pos = vec3(gl_WorkGroupSize.x * realWorldDistance, gl_WorkGroupSize.y * realWorldDistance, height * realWorldDistance);
+	v.pos = vec3(gl_WorkGroupSize.y * realWorldDistance, gl_WorkGroupSize.z * realWorldDistance, height * realWorldDistance);
 	if(height >= 0.9)
 		v.color = vec3(204.0, 211.0, 224.0);
 	else if(height >= 0.8)
