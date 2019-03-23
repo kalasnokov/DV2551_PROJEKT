@@ -1,7 +1,7 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
-#define chunk_size 64
-#define samplingPoints 32
+#define chunk_size 2048
+#define samplingPoints 1024
 #define realWorldDistance 10
 
 layout(local_size_x_id = 9, local_size_y_id = samplingPoints, local_size_y_id = samplingPoints) in;
@@ -18,7 +18,7 @@ layout(std430, binding = 0) buffer lay0 //Output
 
 layout(std430, binding = 1) buffer lay1 //Input
 { 
-	float heightmap[9][chunk_size][chunk_size];
+	float heightmap[9 * chunk_size * chunk_size];
 };
 
 float normalizef(float value, float min, float max)
@@ -28,8 +28,8 @@ float normalizef(float value, float min, float max)
 
 void main() 
 {
-	float currheightmap[chunk_size][chunk_size] = heightmap[gl_WorkGroupSize.x];
-	float height = normalizef(currheightmap[gl_WorkGroupSize.y][gl_WorkGroupSize.z], 0, 1);
+	float currheightmap[chunk_size * chunk_size] = heightmap[gl_WorkGroupSize.x * (chunk_size * chunk_size)];
+	float height = normalizef(currheightmap[gl_WorkGroupSize.y * gl_WorkGroupSize.z], 0, 12);
 	vertex v;
 	float chunkOffset = gl_WorkGroupSize.x * realWorldDistance;
 	v.pos = vec3(chunkOffset * gl_WorkGroupSize.y * realWorldDistance, chunkOffset * gl_WorkGroupSize.z * realWorldDistance, height * realWorldDistance);

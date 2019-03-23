@@ -1,10 +1,10 @@
 #version 450
-#define chunk_size 64
+#define chunk_size 2048
 layout(local_size_x_id = 9) in;
 #extension GL_ARB_separate_shader_objects : enable
 layout(std430, binding = 0) buffer lay0 //Output
 { 
-	float heightmap[9][chunk_size][chunk_size];
+	float heightmap[9 * chunk_size * chunk_size];
 };
 layout(push_constant) uniform Parameters 
 {
@@ -67,7 +67,7 @@ void main()
 			//Write to the buffer
 			float n1 = float(params.chunkID) * params.seed * float(x);
 			float n2 = float(params.chunkID) * params.seed * float(y);
-			heightmap[gl_WorkGroupSize.x][x][y] = pow(pow(noise(vec2(n1,n2)) + noise(vec2(n1,n2)),1.5) + 0.3 * simplex(vec2(n1,n2)),0.5);
+			heightmap[gl_WorkGroupSize.x] * (x * y)] = pow(pow(noise(vec2(n1,n2)) + noise(vec2(n1,n2)),1.5) + 0.3 * simplex(vec2(n1,n2)),0.5);
 		}
 	}
 }

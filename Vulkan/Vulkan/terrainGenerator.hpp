@@ -2,8 +2,8 @@
 #include <vulkan/vulkan.hpp>
 #include "dataObjects.hpp"
 #include "vulkanBufferWrapper.hpp"
-const int32_t chunk_size = 64;
-const size_t gpuMemoryRequired = ((chunk_size * chunk_size) * (sizeof(float)) * 9) / 1000;
+const int32_t chunk_size = 2048;
+const size_t gpuMemoryRequired = ((chunk_size * chunk_size) * (sizeof(float)) * 9) / 1000000;
 /*
 	NOTES:
 
@@ -33,14 +33,12 @@ private:
 		VkPipeline pipeline;						// Compute pipeline for updating particle positions
 		struct computeUBO {							// Compute shader uniform block object
 			float seed;							//		Frame delta time
-			float chunkX;							//		x position of the attractor
-			float chunkY;							//		y position of the attractor
-			int32_t chunkSize = chunk_size;
+			int chunkID;
 		} ubo;
 	} compute;
-	struct chunk
+	struct bufferVal
 	{
-		float height[chunk_size][chunk_size];
+		float height[9 * chunk_size * chunk_size];
 	};
 	dataObjects *dataObjectptr;
 public:
