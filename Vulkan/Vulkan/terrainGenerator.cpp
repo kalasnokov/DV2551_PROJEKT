@@ -12,20 +12,22 @@ void terrainGenerator::setUp(dataObjects * dataObjects)
 	auto physicalDevice = dataObjects->physicalDevice;
 	auto instance = dataObjects->instance;
 	auto device = dataObjects->device;
-
-
+	comp = new Computer(&device, &physicalDevice, &dataObjectptr->computeQueue, "../../Vulkan/Shaders/heightmap.spv", 1, (sizeof(float) * chunk_size * chunk_size) * 9);
+	comp->run();
 }
 
-terrainGenerator::terrainGenerator() {}
+void terrainGenerator::generate(int chunkID)
+{
+	comp->run();
+}
+
+terrainGenerator::terrainGenerator()
+{
+
+}
 
 
 terrainGenerator::~terrainGenerator()
 {
-	compute.storageBuffer.destroy();
-	compute.uniformBuffer.destroy();
-	vkDestroyPipelineLayout(dataObjectptr->device, compute.pipelineLayout, nullptr);
-	vkDestroyDescriptorSetLayout(dataObjectptr->device, compute.descriptorSetLayout, nullptr);
-	vkDestroyPipeline(dataObjectptr->device, compute.pipeline, nullptr);
-	vkDestroyFence(dataObjectptr->device, compute.fence, nullptr);
-	vkDestroyCommandPool(dataObjectptr->device, compute.commandPool, nullptr);
+	delete comp;
 }

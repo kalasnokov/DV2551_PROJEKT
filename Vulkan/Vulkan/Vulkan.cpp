@@ -145,6 +145,7 @@ public:
 		initVulkan();
 		threadPool pool; //causes abort() call on exit
 		std::cout << "Initialization successful.\n";
+		DO.computeQueue = computeQueue;
 		generator.setUp(&DO);
 		p.init(window);
 

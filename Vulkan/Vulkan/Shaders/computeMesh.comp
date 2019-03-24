@@ -11,15 +11,15 @@ struct vertex
 	vec3 color;
 };
 
-layout(std430, binding = 0) buffer lay0 //Output
-{ 
-	vertex verticesOut[];
-}; 
-
-layout(std430, binding = 1) buffer lay1 //Input
+layout(std430, binding = 0) buffer lay1 //Input
 { 
 	float heightmap[9 * chunk_size * chunk_size];
 };
+
+layout(std430, binding = 1) buffer lay0 //Output
+{ 
+	vertex verticesOut[];
+}; 
 
 float normalizef(float value, float min, float max)
 {
