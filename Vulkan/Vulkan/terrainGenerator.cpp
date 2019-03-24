@@ -12,14 +12,14 @@ void terrainGenerator::setUp(dataObjects * dataObjects)
 	auto physicalDevice = dataObjects->physicalDevice;
 	auto instance = dataObjects->instance;
 	auto device = dataObjects->device;
-	comp = new Computer(&device, &physicalDevice, &dataObjectptr->computeQueue, "../../Vulkan/Shaders/heightmap.spv", 1, (sizeof(float) * chunk_size * chunk_size) * 9);
+	float *input = new float[1];
+	input[0] = 5;
+	comp = new Computer(&device, &physicalDevice, &dataObjectptr->computeQueue, "../../Vulkan/Shaders/test.spv",sizeof(float), sizeof(float));
+	comp->populateInBuffer(input);
 	comp->run();
-	float *result = new float[9 * chunk_size * chunk_size];
+	float *result = new float[1];
 	result = (float*)comp->readOutBuffer();
-	for (unsigned i = 0; i < 9; i++)
-	{
-		std::cout << result[i] << std::endl;
-	}
+	std::cout << result[0] << std::endl;
 }
 
 void terrainGenerator::generate(int chunkID)
