@@ -148,7 +148,7 @@ public:
 		generator.setUp(&DO);
 
 
-		Computer* computer = new Computer(&DO.device, &DO.physicalDevice, "../../Vulkan/Shaders/computeMesh.spv", 1024 * sizeof(int), 1024 * sizeof(int), 16, 16, 64);
+		Computer* computer = new Computer(&DO.device, &DO.physicalDevice, "../../Vulkan/Shaders/computeMesh.spv", 128 * sizeof(int), 128 * sizeof(int), 16, 16, 64);
 
 		mainLoop();
 
@@ -590,8 +590,14 @@ private:
 		uniformBuffers.resize(swapChainImages.size());
 		uniformBuffersMemory.resize(swapChainImages.size());
 
+		VkBufferCreateInfo bufferInfo = {};
+		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferInfo.size = bufferSize;
+		bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
 		for (size_t i = 0; i < swapChainImages.size(); i++) {
-			VHF::createBuffer(DO.device, DO.physicalDevice, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
+			VHF::createBuffer(DO.device, DO.physicalDevice, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i], bufferInfo);
 		}
 	}
 
@@ -619,14 +625,27 @@ private:
 
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
-		VHF::createBuffer(DO.device, DO.physicalDevice, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+		VkBufferCreateInfo transferBufferInfo = {};
+		transferBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		transferBufferInfo.size = bufferSize;
+		transferBufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+		transferBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		VHF::createBuffer(DO.device, DO.physicalDevice, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory, transferBufferInfo);
 
 		void* data;
 		vkMapMemory(DO.device, stagingBufferMemory, 0, bufferSize, 0, &data);
 		memcpy(data, indices.data(), (size_t)bufferSize);
 		vkUnmapMemory(DO.device, stagingBufferMemory);
 
-		VHF::createBuffer(DO.device, DO.physicalDevice, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+		VkBufferCreateInfo dstBufferInfo = {};
+		dstBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		dstBufferInfo.size = bufferSize;
+		dstBufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+		dstBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		VHF::createBuffer(DO.device, DO.physicalDevice, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory, dstBufferInfo);
 
 		VHF::cpyBuf(DO.device, DO.commandPool, DO.graphicsQueue, stagingBuffer, indexBuffer, bufferSize);
 
@@ -638,14 +657,27 @@ private:
 		VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMem;
-		VHF::createBuffer(DO.device, DO.physicalDevice, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMem);
+
+		VkBufferCreateInfo transferBufferInfo = {};
+		transferBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		transferBufferInfo.size = bufferSize;
+		transferBufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+		transferBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		VHF::createBuffer(DO.device, DO.physicalDevice, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMem, transferBufferInfo);
 
 		void* data;
 		vkMapMemory(DO.device, stagingBufferMem, 0, bufferSize, 0, &data);
 		memcpy(data, vertices.data(), (size_t)bufferSize);
 		vkUnmapMemory(DO.device, stagingBufferMem);
 
-		VHF::createBuffer(DO.device, DO.physicalDevice, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
+		VkBufferCreateInfo dstBufferInfo = {};
+		dstBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		dstBufferInfo.size = bufferSize;
+		dstBufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+		dstBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		VHF::createBuffer(DO.device, DO.physicalDevice, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory, dstBufferInfo);
 
 		VHF::cpyBuf(DO.device, DO.commandPool, DO.graphicsQueue, stagingBuffer, vertexBuffer, bufferSize);
 

@@ -153,7 +153,7 @@ void Computer::descriptorSetup() {
 	writeDescriptorSet[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	writeDescriptorSet[1].pBufferInfo = &outInfo;
 
-	//vkUpdateDescriptorSets(*device, 2, writeDescriptorSet, 0, 0); //causes access violation
+	vkUpdateDescriptorSets(*device, 2, writeDescriptorSet, 0, 0);
 }
 
 void Computer::pipelineSetup() {

@@ -29,7 +29,7 @@ namespace VHF {//Vulkan Helper Functions
 
 	std::vector<char> readFile(const std::string& filename);
 
-	void createBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+	void createBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory, VkBufferCreateInfo bufferCreateInfo);
 
 	void cpyBuf(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer src, VkBuffer dst, VkDeviceSize size);
 

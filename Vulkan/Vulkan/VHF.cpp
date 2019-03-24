@@ -49,14 +49,17 @@ std::vector<char> VHF::readFile(const std::string& filename) {
 	return buffer;
 }
 
-void VHF::createBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
+/*
 	VkBufferCreateInfo bufferInfo = {};
 	bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 	bufferInfo.size = size;
 	bufferInfo.usage = usage;
 	bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+*/
 
-	if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+void VHF::createBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory, VkBufferCreateInfo bufferCreateInfo) {
+
+	if (vkCreateBuffer(device, &bufferCreateInfo, 0, &buffer) != VK_SUCCESS) {
 		throw std::runtime_error("Failed to create buffer!");
 	}
 
@@ -72,7 +75,9 @@ void VHF::createBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkDevic
 		throw std::runtime_error("Failed to allocate buffer memory!");
 	}
 
-	vkBindBufferMemory(device, buffer, bufferMemory, 0);
+	if (vkBindBufferMemory(device, buffer, bufferMemory, 0) != VK_SUCCESS) {
+		throw std::runtime_error("Failed to bind buffer memory!");
+	}
 }
 
 void VHF::cpyBuf(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer src, VkBuffer dst, VkDeviceSize size) {

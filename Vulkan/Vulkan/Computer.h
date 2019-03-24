@@ -43,6 +43,7 @@ private:
 
 	VkDescriptorSetLayout descriptorSetLayout;
 	VkDescriptorSet descriptorSet;
+	VkDescriptorPool descriptorPool;
 
 	VkPipelineLayout pipelineLayout;
 	VkPipeline pipeline;
