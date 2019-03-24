@@ -54,7 +54,7 @@ public:
 		vp.projection = glm::perspective(glm::radians(80.0f), (float)width / (float)height, 0.1f, 100.0f);
 		lastPos = glm::vec2((double)width / 2.0, (double)height / 2.0);
 	}
-	int getCurrentChunk()
+	glm::vec2 getCurrentChunk()
 	{
 		return chunkID;
 	}
