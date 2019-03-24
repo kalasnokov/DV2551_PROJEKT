@@ -73,5 +73,8 @@
     <None Include="Shaders\heightmap.comp">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\test.comp">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

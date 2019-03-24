@@ -88,7 +88,7 @@ void Computer::commandBufferSetup() {
 	commandPoolCreateInfo.flags = 0;
 	commandPoolCreateInfo.queueFamilyIndex = queueFamilyIndex;
 
-	if (vkCreateCommandPool(*device, &commandPoolCreateInfo, NULL, &commandPool) != VK_SUCCESS) {
+	if (vkCreateCommandPool(*device, &commandPoolCreateInfo, 0, &commandPool) != VK_SUCCESS) {
 		throw std::runtime_error("COMPUTER ERROR: FAILED TO CREATE COMMANDPOOL!");
 	}
 
@@ -111,7 +111,7 @@ void Computer::commandBufferSetup() {
 	}
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSet, 0, NULL);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSet, 0, 0);
 
 		vkCmdDispatch(commandBuffer, 1, 1, 1);
 
@@ -126,16 +126,20 @@ void Computer::descriptorLayoutSetup() {
 	descriptorSetLayoutBinding[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	descriptorSetLayoutBinding[0].descriptorCount = 1;
 	descriptorSetLayoutBinding[0].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+	descriptorSetLayoutBinding[0].pImmutableSamplers = 0;
 
 	descriptorSetLayoutBinding[1].binding = 1;
 	descriptorSetLayoutBinding[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	descriptorSetLayoutBinding[1].descriptorCount = 1;
 	descriptorSetLayoutBinding[1].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+	descriptorSetLayoutBinding[1].pImmutableSamplers = 0;
 
 	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = {};
 	descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 	descriptorSetLayoutCreateInfo.bindingCount = 2;
 	descriptorSetLayoutCreateInfo.pBindings = descriptorSetLayoutBinding;
+	descriptorSetLayoutCreateInfo.flags = 0;
+	descriptorSetLayoutCreateInfo.pNext = 0;
 
 	// Create the descriptor set layout. 
 	if (vkCreateDescriptorSetLayout(*device, &descriptorSetLayoutCreateInfo, 0, &descriptorSetLayout) != VK_SUCCESS) {
@@ -171,12 +175,12 @@ void Computer::descriptorSetup() {
 	VkDescriptorBufferInfo inInfo;
 	inInfo.buffer = inBuffer;
 	inInfo.offset = 0;
-	inInfo.range = VK_WHOLE_SIZE;
+	inInfo.range = inBufferSize;
 
 	VkDescriptorBufferInfo outInfo;
 	outInfo.buffer = outBuffer;
 	outInfo.offset = 0;
-	outInfo.range = VK_WHOLE_SIZE;
+	outInfo.range = outBufferSize;
 
 	
 	VkWriteDescriptorSet writeDescriptorSet[2];
@@ -199,10 +203,10 @@ void Computer::descriptorSetup() {
 	writeDescriptorSet[1].descriptorCount = 1;
 	writeDescriptorSet[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	writeDescriptorSet[1].pImageInfo = 0;
-	writeDescriptorSet[1].pBufferInfo = &inInfo;
+	writeDescriptorSet[1].pBufferInfo = &outInfo;
 	writeDescriptorSet[1].pTexelBufferView = 0;
 
-	vkUpdateDescriptorSets(*device, 2, writeDescriptorSet, 0, 0); //causes access violation
+	vkUpdateDescriptorSets(*device, 2, writeDescriptorSet, 0, 0);
 }
 
 void Computer::pipelineSetup() {

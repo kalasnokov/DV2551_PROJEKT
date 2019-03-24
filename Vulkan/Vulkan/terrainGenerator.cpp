@@ -19,7 +19,7 @@ void terrainGenerator::setUp(dataObjects * dataObjects)
 	comp->run();
 	float *result = new float[1];
 	result = (float*)comp->readOutBuffer();
-	std::cout << result[0] << std::endl;
+	std::cout << "\nCompute shader result: " << result[0] <<"\n\n";
 }
 
 void terrainGenerator::generate(int chunkID)

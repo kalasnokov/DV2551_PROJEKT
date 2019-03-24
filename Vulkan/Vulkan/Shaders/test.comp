@@ -4,12 +4,12 @@
 layout(local_size_x_id = 1) in;
 layout(std430, binding = 0) buffer lay1 //Input
 { 
-	float invar[1];
+	float invar[];
 };
 
 layout(std430, binding = 1) buffer lay0 //Output
 { 
-	float outvar[1];
+	float outvar[];
 }; 
 
 void main() 
