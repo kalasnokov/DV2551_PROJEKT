@@ -30,6 +30,32 @@ Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* 
 	std::cout << "COMPUTER: COMMANDBUFFER SET!\n";
 }
 
+void Computer::run() {
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &commandBuffer;
+
+	VkFence fence;
+	VkFenceCreateInfo fenceCreateInfo = {};
+	fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+	fenceCreateInfo.flags = 0;
+
+	if (vkCreateFence(*device, &fenceCreateInfo, NULL, &fence) != VK_SUCCESS) {
+		throw std::runtime_error("COMPUTER ERROR: FAILED TO CREATE FENCE!");
+	}
+
+	if (vkQueueSubmit(*queue, 1, &submitInfo, fence) != VK_SUCCESS) {
+		throw std::runtime_error("COMPUTER ERROR: FAILED TO SUBMIT QUEUE!");
+	}
+
+	if (vkWaitForFences(*device, 1, &fence, VK_TRUE, std::numeric_limits<uint64_t>::max()) != VK_SUCCESS) {
+		throw std::runtime_error("COMPUTER ERROR: FAILED TO WAIT FOR FENCE! (HOW???)");
+	}
+
+	vkDestroyFence(*device, fence, NULL);
+}
+
 void Computer::setupBuffers() {
 	VkBufferCreateInfo inBufferCreateInfo = {};
 	inBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -71,14 +97,18 @@ void Computer::commandBufferSetup() {
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+		throw std::runtime_error("COMPUTER ERROR: FAILED TO BEGIN COMMAND BUFFER!");
+	}
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
-		//vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSet, 0, NULL);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSet, 0, NULL);
 
-		//vkCmdDispatch(commandBuffer, 1, 1, 1);
+		vkCmdDispatch(commandBuffer, 1, 1, 1);
 
-	vkEndCommandBuffer(commandBuffer);
+	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+		throw std::runtime_error("COMPUTER ERROR: FAILED TO END COMMAND BUFFER!");
+	}
 }
 
 void Computer::descriptorLayoutSetup() {
