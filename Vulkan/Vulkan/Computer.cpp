@@ -30,6 +30,19 @@ Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* 
 	std::cout << "COMPUTER: COMMANDBUFFER SET!\n";
 }
 
+void Computer::populateInBuffer(const void* src) {
+	void* data;
+	vkMapMemory(*device, inBufferMem, 0, inBufferSize, 0, &data);
+	memcpy(data, src, (size_t)inBufferSize);
+	vkUnmapMemory(*device, inBufferMem);
+}
+
+void* Computer::readOutBuffer() {
+	void* data;
+	vkMapMemory(*device, outBufferMem, 0, outBufferSize, 0, &data);
+	return data;
+}
+
 void Computer::run() {
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

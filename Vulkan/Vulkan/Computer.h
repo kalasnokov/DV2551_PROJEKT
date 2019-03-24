@@ -7,6 +7,10 @@ class Computer
 public:
 	Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* queue, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize);
 
+	void populateInBuffer(const void* src);
+
+	void* readOutBuffer();
+
 	void run();
 
 	void setupBuffers();
