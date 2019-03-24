@@ -1,9 +1,11 @@
 #pragma once
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#define GLM_FORCE_RADIANS
 #include <glm/common.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/common.hpp>
 const float SENSITIVITY = 0.01f;
 struct matrices
 {
@@ -19,40 +21,27 @@ private:
 	glm::vec3 front = glm::vec3(0, 1.0, 0);
 	glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
 	glm::vec3 right;
-	float Yaw = -90.0f;
-	float Pitch;
+	float roll, yaw, pitch;
 	int width, height;
-	bool firstMouse = true;
-	double lastX, lastY;
-	void updateCameraVectors()
+	glm::vec2 lastPos;
+	void updateView()
 	{
-		front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-		front.y = sin(glm::radians(Pitch));
-		front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-		front = glm::normalize(front);
-		right = glm::normalize(glm::cross(front, up)); 
-	}
-	void ProcessMouseMovement()
-	{
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
-		auto xoffset = xpos - lastX;
-		auto yoffset = ypos - lastY;
-		xoffset *= SENSITIVITY;
-		yoffset *= SENSITIVITY;
+		glm::mat4 matRoll = glm::mat4(1.0f);//identity matrix; 
+		glm::mat4 matPitch = glm::mat4(1.0f);//identity matrix
+		glm::mat4 matYaw = glm::mat4(1.0f);//identity matrix
 
-		Yaw += xoffset;
-		Pitch += yoffset;
+		//roll, pitch and yaw are used to store our angles in our class
+		matRoll = glm::rotate(matRoll, roll, glm::vec3(0.0f, 0.0f, 1.0f));
+		matPitch = glm::rotate(matPitch, pitch, glm::vec3(1.0f, 0.0f, 0.0f));
+		matYaw = glm::rotate(matYaw, yaw, glm::vec3(0.0f, 1.0f, 0.0f));
 
-		// Make sure that when pitch is out of bounds, screen doesn't get flipped
-		if (Pitch > 89.0f)
-			Pitch = 89.0f;
-		if (Pitch < -89.0f)
-			Pitch = -89.0f;
-		updateCameraVectors();
-		glfwSetCursorPos(window, (double)width / 2.0, (double)height / 2.0);
-		lastX = (double)width / 2.0;
-		lastY = (double)height / 2.0;
+		//order matters
+		glm::mat4 rotate = matRoll * matPitch * matYaw;
+
+		glm::mat4 translate = glm::mat4(1.0f);
+		translate = glm::translate(translate, -front);
+
+		vp.view = rotate * translate;
 	}
 public:
 	matrices vp;
@@ -63,22 +52,32 @@ public:
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glfwGetWindowSize(window, &width, &height);
 		vp.projection = glm::perspective(glm::radians(80.0f), (float)width / (float)height, 0.1f, 100.0f);
-		lastX = (double)width / 2.0;
-		lastY = (double)height / 2.0;
+		lastPos = glm::vec2((double)width / 2.0, (double)height / 2.0);
 	}
 	matrices *update()
 	{
-		float cameraSpeed = 0.05f; // adjust accordingly
+		double x = 0, y = 0;
+		glfwGetCursorPos(window, &x, &y);
+		glm::vec2 mouse_delta = glm::vec2(x, y) - lastPos;
+		lastPos = glm::vec2(x, y);
+		float cameraSpeed = 0.005f; // adjust accordingly
+		yaw += cameraSpeed * mouse_delta.x;
+		pitch += cameraSpeed * mouse_delta.y;
+		float dx = 0, dz = 0;
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			pos += cameraSpeed * front;
+			dz = 2.0;
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			pos -= cameraSpeed * front;
+			dz = -2.0;
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			pos -= glm::normalize(glm::cross(front, up)) * cameraSpeed;
+			dx = -2.0;
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			pos += glm::normalize(glm::cross(front, up)) * cameraSpeed;
-		//this->ProcessMouseMovement();
-		vp.view = glm::lookAt(pos, pos + front, up);
+			dx = 2.0;
+		auto mat = vp.view;
+		glm::vec3 forward(mat[0][2], mat[1][2], mat[2][2]);
+		glm::vec3 strafe(mat[0][0], mat[1][0], mat[2][0]);
+		front += (-dz * forward + dx * strafe) * cameraSpeed;
+		this->updateView();
+		//glfwSetCursorPos(window, double(width) / 2.0, double(height) / 2.0);
 		return &vp;
 	}
 	~player()
