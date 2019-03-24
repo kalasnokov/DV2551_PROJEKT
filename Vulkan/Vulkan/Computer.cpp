@@ -2,9 +2,10 @@
 #include "Computer.h"
 
 
-Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize, uint32_t height, uint32_t width, uint32_t workForceGroupSize){
+Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* queue, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize){
 	this->device = device;
 	this->physicalDevice = physicalDevice;
+	this->queue = queue;
 
 	this->height = height;
 	this->width = width;
@@ -138,22 +139,31 @@ void Computer::descriptorSetup() {
 	outInfo.offset = 0;
 	outInfo.range = VK_WHOLE_SIZE;
 
+	
 	VkWriteDescriptorSet writeDescriptorSet[2];
 	writeDescriptorSet[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeDescriptorSet[0].pNext = 0;
 	writeDescriptorSet[0].dstSet = descriptorSet;
 	writeDescriptorSet[0].dstBinding = 0;
+	writeDescriptorSet[0].dstArrayElement = 0;
 	writeDescriptorSet[0].descriptorCount = 1;
 	writeDescriptorSet[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+	writeDescriptorSet[0].pImageInfo = 0;
 	writeDescriptorSet[0].pBufferInfo = &inInfo;
+	writeDescriptorSet[0].pTexelBufferView = 0;
 
 	writeDescriptorSet[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeDescriptorSet[1].pNext = 0;
 	writeDescriptorSet[1].dstSet = descriptorSet;
 	writeDescriptorSet[1].dstBinding = 1;
+	writeDescriptorSet[1].dstArrayElement = 0;
 	writeDescriptorSet[1].descriptorCount = 1;
 	writeDescriptorSet[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	writeDescriptorSet[1].pBufferInfo = &outInfo;
+	writeDescriptorSet[1].pImageInfo = 0;
+	writeDescriptorSet[1].pBufferInfo = &inInfo;
+	writeDescriptorSet[1].pTexelBufferView = 0;
 
-	//vkUpdateDescriptorSets(*device, 2, writeDescriptorSet, 0, 0); //causes access violation
+	vkUpdateDescriptorSets(*device, 2, writeDescriptorSet, 0, 0); //causes access violation
 }
 
 void Computer::pipelineSetup() {

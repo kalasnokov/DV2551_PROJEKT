@@ -148,7 +148,7 @@ public:
 		generator.setUp(&DO);
 		p.init(window);
 
-		Computer* computer = new Computer(&DO.device, &DO.physicalDevice, "../../Vulkan/Shaders/computeMesh.spv", 128 * sizeof(int), 128 * sizeof(int), 16, 16, 64);
+		Computer* computer = new Computer(&DO.device, &DO.physicalDevice, &computeQueue, "../../Vulkan/Shaders/computeMesh.spv", 128 * sizeof(int), 128 * sizeof(int));
 
 		mainLoop();
 
@@ -1152,7 +1152,7 @@ private:
 		QueueFamilyIndices indices = VHF::findQueueFamilies(DO.physicalDevice, surface);
 
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-		std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
+		std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value(), indices.computeFamily.value() };
 
 		float queuePriority = 1.0f;
 		for (uint32_t queueFamily : uniqueQueueFamilies) {
@@ -1190,6 +1190,7 @@ private:
 
 		vkGetDeviceQueue(DO.device, indices.graphicsFamily.value(), 0, &DO.graphicsQueue);
 		vkGetDeviceQueue(DO.device, indices.presentFamily.value(), 0, &presentQueue);
+		vkGetDeviceQueue(DO.device, indices.computeFamily.value(), 0, &computeQueue);
 	}
 
 	void checkExtentions() {
@@ -1386,6 +1387,8 @@ private:
 	VkSurfaceKHR surface;
 
 	VkQueue presentQueue;
+	VkQueue computeQueue;
+
 	VkSwapchainKHR swapChain;
 	std::vector<VkImage> swapChainImages;
 	VkFormat swapChainImageFormat;

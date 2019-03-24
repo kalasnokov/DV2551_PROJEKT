@@ -29,7 +29,7 @@ float normalizef(float value, float min, float max)
 void main() 
 {
   if(gl_GlobalInvocationID.x >= 9 || gl_GlobalInvocationID.y >= samplingPoints || gl_GlobalInvocationID.z >= samplingPoints)
-	return
+	return;
 
 	float height = normalizef(heightmap[gl_WorkGroupSize.x * (chunk_size * chunk_size) * (gl_WorkGroupSize.y * gl_WorkGroupSize.z)], 0, 12);
 	vertex v;

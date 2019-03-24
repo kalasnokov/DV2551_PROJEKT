@@ -5,7 +5,7 @@
 class Computer
 {
 public:
-	Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize, uint32_t height, uint32_t width, uint32_t workForce);
+	Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* queue, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize);
 
 	void setupBuffers();
 
@@ -36,7 +36,7 @@ private:
 
 	VkBuffer uniforms;
 
-	VkQueue queue;
+	VkQueue* queue;
 	VkCommandPool commandPool;
 	VkCommandBuffer commandBuffer;
 	VkFence fence;
