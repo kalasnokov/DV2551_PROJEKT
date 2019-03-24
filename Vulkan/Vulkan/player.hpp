@@ -16,7 +16,7 @@ class player
 {
 private:
 	GLFWwindow *window = nullptr;
-	int chunkID;
+	glm::vec2 chunkID = glm::vec2(2, 2);
 	glm::vec3 pos = glm::vec3(2.0f,2.0f,2.0f);
 	glm::vec3 front = glm::vec3(0, 1.0, 0);
 	glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -53,6 +53,10 @@ public:
 		glfwGetWindowSize(window, &width, &height);
 		vp.projection = glm::perspective(glm::radians(80.0f), (float)width / (float)height, 0.1f, 100.0f);
 		lastPos = glm::vec2((double)width / 2.0, (double)height / 2.0);
+	}
+	int getCurrentChunk()
+	{
+		return chunkID;
 	}
 	matrices *update()
 	{

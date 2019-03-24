@@ -22,9 +22,12 @@ void terrainGenerator::setUp(dataObjects * dataObjects)
 	std::cout << "\nCompute shader result: " << result[0] <<"\n\n";
 }
 
-void terrainGenerator::generate(int chunkID)
+void terrainGenerator::generate(glm::vec2 chunkID)
 {
+	//Set chunkID as parameter allong with seed
+	//Chunk ID is where in the grid the player is
 	comp->run();
+	chunkBuffer.buffer = (float*)comp->readOutBuffer();
 }
 
 terrainGenerator::terrainGenerator()
