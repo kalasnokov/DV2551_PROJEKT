@@ -2,13 +2,18 @@
 #include "Computer.h"
 
 
-Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* queue, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize){
+Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* queue, std::string shaderLoc, std::vector<uint32_t> bufferSizes){
 	this->device = device;
 	this->physicalDevice = physicalDevice;
 	this->queue = queue;
 
-	this->inBufferSize = inBufSize;
-	this->outBufferSize = outBufSize;
+	for (int i = 0; i < bufferSizes.size(); i++) {
+		bufferInfo info;
+		info.bufferSize = bufferSizes.at(i);
+		bufferStructs.push_back(info);
+	}
+
+	std::cout << bufferStructs.size() << " buffers are to be created\n";
 
 	queueFamilyIndex = VHF::findQueueFamily(*physicalDevice, VK_QUEUE_COMPUTE_BIT);
 	std::cout << "COMPUTER: QUEUEFAMILYINDEX SET!\n";
@@ -26,16 +31,17 @@ Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* 
 	std::cout << "COMPUTER: COMMANDBUFFER SET!\n";
 }
 
-void Computer::populateInBuffer(const void* src) {
+void Computer::populateBuffer(int loc, const void* src) {
 	void* data;
-	vkMapMemory(*device, inBufferMem, 0, inBufferSize, 0, &data);
-	memcpy(data, src, (size_t)inBufferSize);
-	vkUnmapMemory(*device, inBufferMem);
+	vkMapMemory(*device, bufferStructs.at(loc).bufferMem, 0, bufferStructs.at(loc).bufferSize, 0, &data);
+	memcpy(data, src, (size_t)bufferStructs.at(loc).bufferSize);
+	vkUnmapMemory(*device, bufferStructs.at(loc).bufferMem);
 }
 
-void* Computer::readOutBuffer() {
+void* Computer::readBuffer(int loc) {
 	void* data;
-	vkMapMemory(*device, outBufferMem, 0, outBufferSize, 0, &data);
+	vkMapMemory(*device, bufferStructs.at(loc).bufferMem, 0, bufferStructs.at(loc).bufferSize, 0, &data);
+	vkUnmapMemory(*device, bufferStructs.at(loc).bufferMem);
 	return data;
 }
 
@@ -66,20 +72,15 @@ void Computer::run() {
 }
 
 void Computer::setupBuffers() {
-	VkBufferCreateInfo inBufferCreateInfo = {};
-	inBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	inBufferCreateInfo.size = inBufferSize;
-	inBufferCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-	inBufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	for (int i = 0; i < bufferStructs.size(); i++) {
+		VkBufferCreateInfo bufferCreateInfo = {};
+		bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferCreateInfo.size = bufferStructs.at(i).bufferSize;
+		bufferCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+		bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-	VkBufferCreateInfo outBufferCreateInfo = {};
-	outBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	outBufferCreateInfo.size = inBufferSize;
-	outBufferCreateInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-	outBufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-	VHF::createBuffer(*device, *physicalDevice, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, inBuffer, inBufferMem, inBufferCreateInfo);
-	VHF::createBuffer(*device, *physicalDevice, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, outBuffer, outBufferMem, outBufferCreateInfo);
+		VHF::createBuffer(*device, *physicalDevice, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, bufferStructs.at(i).buffer, bufferStructs.at(i).bufferMem, bufferCreateInfo);
+	}
 }
 
 void Computer::commandBufferSetup() {
@@ -121,22 +122,18 @@ void Computer::commandBufferSetup() {
 }
 
 void Computer::descriptorLayoutSetup() {
-	VkDescriptorSetLayoutBinding descriptorSetLayoutBinding[2];
-	descriptorSetLayoutBinding[0].binding = 0;
-	descriptorSetLayoutBinding[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	descriptorSetLayoutBinding[0].descriptorCount = 1;
-	descriptorSetLayoutBinding[0].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-	descriptorSetLayoutBinding[0].pImmutableSamplers = 0;
-
-	descriptorSetLayoutBinding[1].binding = 1;
-	descriptorSetLayoutBinding[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	descriptorSetLayoutBinding[1].descriptorCount = 1;
-	descriptorSetLayoutBinding[1].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
-	descriptorSetLayoutBinding[1].pImmutableSamplers = 0;
+	VkDescriptorSetLayoutBinding* descriptorSetLayoutBinding = new VkDescriptorSetLayoutBinding[bufferStructs.size()];
+	for (int i = 0; i < bufferStructs.size(); i++) {
+		descriptorSetLayoutBinding[i].binding = i;
+		descriptorSetLayoutBinding[i].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		descriptorSetLayoutBinding[i].descriptorCount = 1;
+		descriptorSetLayoutBinding[i].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+		descriptorSetLayoutBinding[i].pImmutableSamplers = 0;
+	}
 
 	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo = {};
 	descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	descriptorSetLayoutCreateInfo.bindingCount = 2;
+	descriptorSetLayoutCreateInfo.bindingCount = bufferStructs.size();
 	descriptorSetLayoutCreateInfo.pBindings = descriptorSetLayoutBinding;
 	descriptorSetLayoutCreateInfo.flags = 0;
 	descriptorSetLayoutCreateInfo.pNext = 0;
@@ -145,12 +142,14 @@ void Computer::descriptorLayoutSetup() {
 	if (vkCreateDescriptorSetLayout(*device, &descriptorSetLayoutCreateInfo, 0, &descriptorSetLayout) != VK_SUCCESS) {
 		throw std::runtime_error("COMPUTER ERROR: FAILED TO SETUP DESCRIPTORLAYOUT!");
 	}
+
+	delete[] descriptorSetLayoutBinding;
 }
 
 void Computer::descriptorSetup() {
 	VkDescriptorPoolSize descriptorPoolSize = {};
 	descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	descriptorPoolSize.descriptorCount = 2;
+	descriptorPoolSize.descriptorCount = bufferStructs.size();
 
 	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
 	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -172,41 +171,29 @@ void Computer::descriptorSetup() {
 		throw std::runtime_error("COMPUTER ERROR: FAILED TO SETUP DESCRIPTOR SETS!");
 	}
 
-	VkDescriptorBufferInfo inInfo;
-	inInfo.buffer = inBuffer;
-	inInfo.offset = 0;
-	inInfo.range = inBufferSize;
+	VkWriteDescriptorSet* writeDescriptorSets = new VkWriteDescriptorSet[bufferStructs.size()];
+	VkDescriptorBufferInfo* infos = new VkDescriptorBufferInfo[bufferStructs.size()];
+	for (int i = 0; i < bufferStructs.size(); i++) {
+		infos[i].buffer = bufferStructs.at(i).buffer;
+		infos[i].offset = 0;
+		infos[i].range = bufferStructs.at(i).bufferSize;
 
-	VkDescriptorBufferInfo outInfo;
-	outInfo.buffer = outBuffer;
-	outInfo.offset = 0;
-	outInfo.range = outBufferSize;
+		writeDescriptorSets[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		writeDescriptorSets[i].pNext = 0;
+		writeDescriptorSets[i].dstSet = descriptorSet;
+		writeDescriptorSets[i].dstBinding = i;
+		writeDescriptorSets[i].dstArrayElement = 0;
+		writeDescriptorSets[i].descriptorCount = 1;
+		writeDescriptorSets[i].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		writeDescriptorSets[i].pImageInfo = 0;
+		writeDescriptorSets[i].pBufferInfo = &infos[i];
+		writeDescriptorSets[i].pTexelBufferView = 0;
+	}
 
-	
-	VkWriteDescriptorSet writeDescriptorSet[2];
-	writeDescriptorSet[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-	writeDescriptorSet[0].pNext = 0;
-	writeDescriptorSet[0].dstSet = descriptorSet;
-	writeDescriptorSet[0].dstBinding = 0;
-	writeDescriptorSet[0].dstArrayElement = 0;
-	writeDescriptorSet[0].descriptorCount = 1;
-	writeDescriptorSet[0].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	writeDescriptorSet[0].pImageInfo = 0;
-	writeDescriptorSet[0].pBufferInfo = &inInfo;
-	writeDescriptorSet[0].pTexelBufferView = 0;
+	vkUpdateDescriptorSets(*device, bufferStructs.size(), writeDescriptorSets, 0, 0);
 
-	writeDescriptorSet[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-	writeDescriptorSet[1].pNext = 0;
-	writeDescriptorSet[1].dstSet = descriptorSet;
-	writeDescriptorSet[1].dstBinding = 1;
-	writeDescriptorSet[1].dstArrayElement = 0;
-	writeDescriptorSet[1].descriptorCount = 1;
-	writeDescriptorSet[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	writeDescriptorSet[1].pImageInfo = 0;
-	writeDescriptorSet[1].pBufferInfo = &outInfo;
-	writeDescriptorSet[1].pTexelBufferView = 0;
-
-	vkUpdateDescriptorSets(*device, 2, writeDescriptorSet, 0, 0);
+	delete[] writeDescriptorSets;
+	delete[] infos;
 }
 
 void Computer::pipelineSetup() {

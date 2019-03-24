@@ -5,11 +5,11 @@
 class Computer
 {
 public:
-	Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* queue, std::string shaderLoc, uint32_t inBufSize, uint32_t outBufSize);
+	Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* queue, std::string shaderLoc, std::vector<uint32_t> bufferSizes);
 
-	void populateInBuffer(const void* src);
+	void * readBuffer(int loc);
 
-	void* readOutBuffer();
+	void populateBuffer(int loc, const void* src);
 
 	void run();
 
@@ -25,20 +25,18 @@ public:
 
 	void loadShader(std::string shaderLoc);
 
+	struct bufferInfo {
+	public:
+		VkBuffer buffer;
+		VkDeviceMemory bufferMem;
+		uint32_t bufferSize;
+	};
+
 	~Computer();
 
 private:
 	VkDevice* device;
 	VkPhysicalDevice* physicalDevice;
-
-	VkBuffer inBuffer;
-	VkBuffer outBuffer;
-
-	uint32_t inBufferSize;
-	uint32_t outBufferSize;
-
-	VkDeviceMemory inBufferMem;
-	VkDeviceMemory outBufferMem;
 
 	VkBuffer uniforms;
 
@@ -58,5 +56,7 @@ private:
 	uint32_t queueFamilyIndex;
 
 	VkShaderModule shader;
+
+	std::vector<bufferInfo> bufferStructs;
 };
 

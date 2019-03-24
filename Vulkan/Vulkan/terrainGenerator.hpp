@@ -2,6 +2,8 @@
 #include <vulkan/vulkan.hpp>
 #include "dataObjects.hpp"
 #include "Computer.h"
+#include <stdlib.h>
+#include <time.h>
 const int32_t chunk_size = 2048;
 const size_t gpuMemoryRequired = ((chunk_size * chunk_size) * (sizeof(float)) * 9) / 1000000;
 struct chunkArray

@@ -13,13 +13,21 @@ void terrainGenerator::setUp(dataObjects * dataObjects)
 	auto instance = dataObjects->instance;
 	auto device = dataObjects->device;
 	float *input = new float[1];
-	input[0] = 5;
-	comp = new Computer(&device, &physicalDevice, &dataObjectptr->computeQueue, "../../Vulkan/Shaders/test.spv",sizeof(float), sizeof(float));
-	comp->populateInBuffer(input);
+	srand(time(NULL));
+	input[0] = rand() % 100;
+
+	std::vector<uint32_t> sizes;
+	for (int i = 0; i < 2; i++) {
+		sizes.push_back(sizeof(float));
+	}
+
+	comp = new Computer(&device, &physicalDevice, &dataObjectptr->computeQueue, "../../Vulkan/Shaders/test.spv", sizes);
+	comp->populateBuffer(0, input);
 	comp->run();
 	float *result = new float[1];
-	result = (float*)comp->readOutBuffer();
-	std::cout << "\nCompute shader result: " << result[0] <<"\n\n";
+	result = (float*)comp->readBuffer(1);
+	std::cout << "\nCompute expected result: " << input[0] + 1 <<"\n\n";
+	std::cout << "\nCompute shader result: " << result[0] << "\n\n";
 }
 
 void terrainGenerator::generate(glm::vec2 chunkID)
@@ -27,7 +35,7 @@ void terrainGenerator::generate(glm::vec2 chunkID)
 	//Set chunkID as parameter allong with seed
 	//Chunk ID is where in the grid the player is
 	comp->run();
-	chunkBuffer.buffer = (float*)comp->readOutBuffer();
+	//chunkBuffer.buffer = (float*)comp->readOutBuffer();
 }
 
 terrainGenerator::terrainGenerator()
