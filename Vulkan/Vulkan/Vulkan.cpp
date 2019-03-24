@@ -29,7 +29,7 @@
 #include "dataObjects.hpp"
 
 #include "computer.h"
-
+#include "player.hpp"
 using namespace std::chrono_literals;
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -146,7 +146,7 @@ public:
 		threadPool pool; //causes abort() call on exit
 		std::cout << "Initialization successful.\n";
 		generator.setUp(&DO);
-
+		p.init(window);
 
 		Computer* computer = new Computer(&DO.device, &DO.physicalDevice, "../../Vulkan/Shaders/computeMesh.spv", 128 * sizeof(int), 128 * sizeof(int), 16, 16, 64);
 
@@ -159,7 +159,7 @@ public:
 	dataObjects DO;
 
 private:
-
+	matrices *vp;
 	//MAIN FUNCTIONS
 	void initWindow() {
 		glfwInit();
@@ -178,6 +178,7 @@ private:
 			prevtime = std::chrono::high_resolution_clock::now();
 			frameCount++;
 			glfwPollEvents();
+			vp = p.update();
 			drawFrame();
 			auto now = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double> elapsed = now - prevtime;
@@ -574,8 +575,8 @@ private:
 
 		UniformBufferObject ubo = {};
 		ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.projection = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
+		ubo.view = vp->view; //glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		ubo.projection = vp->projection; //glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
 		ubo.projection[1][1] *= -1; //prevent upside down rendering
 
 		void* data;
@@ -1379,7 +1380,7 @@ private:
 
 	//GLFW variabels
 	GLFWwindow* window;
-
+	player p;
 	//Vulkan variables
 
 	VkSurfaceKHR surface;
