@@ -58,5 +58,9 @@ private:
 	uint32_t queueFamilyIndex;
 
 	VkShaderModule shader;
+
+	uint32_t height;
+	uint32_t width;
+	uint32_t workForceGroupSize;
 };
 

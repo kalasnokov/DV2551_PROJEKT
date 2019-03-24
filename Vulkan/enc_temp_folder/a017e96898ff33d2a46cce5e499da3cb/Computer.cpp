@@ -7,6 +7,10 @@ Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* 
 	this->physicalDevice = physicalDevice;
 	this->queue = queue;
 
+	this->height = height;
+	this->width = width;
+	this->workForceGroupSize = workForceGroupSize;
+
 	this->inBufferSize = inBufSize;
 	this->outBufferSize = outBufSize;
 
