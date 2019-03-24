@@ -19,6 +19,7 @@ struct dataObjects {
 
 	VkDebugUtilsMessengerEXT debugMessenger;
 
+	VkQueue computeQueue;
 };
 
 struct computeObjects {
