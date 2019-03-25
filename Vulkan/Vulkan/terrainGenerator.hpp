@@ -10,9 +10,10 @@ struct chunkArray
 {
 	float *buffer;
 	glm::vec2 chunkID;
+	const size_t mem = chunk_size * chunk_size * 9;
 	chunkArray()
 	{
-		buffer = new float[9 * chunk_size * chunk_size];
+		buffer = new float[mem];
 	}
 	~chunkArray()
 	{

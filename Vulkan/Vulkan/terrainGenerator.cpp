@@ -13,6 +13,7 @@ void terrainGenerator::setUp(dataObjects * dataObjects)
 	auto instance = dataObjects->instance;
 	auto device = dataObjects->device;
 
+	std::vector<uint32_t> sizes;
 	int size = 5;
 	float *input = new float[size];
 	srand(time(NULL));
@@ -52,6 +53,18 @@ void terrainGenerator::setUp(dataObjects * dataObjects)
 		std::cout << result[i] << " ";
 	}
 	std::cout << "\n";
+	/*struct UBO
+	{
+		float seed;
+		glm::vec2 chunkID;
+	}ubo;
+	ubo.seed = this->seed;
+	ubo.chunkID = this->chunkBuffer.chunkID;
+	sizes.push_back(sizeof(UBO));
+	comp = new Computer(&device, &physicalDevice, &dataObjectptr->computeQueue, "../../Vulkan/Shaders/heightmap.spv", sizes);
+	comp->populateBuffer(2, &ubo);
+	comp->run();
+	chunkBuffer.buffer = (float*)comp->readBuffer(1);*/
 }
 
 void terrainGenerator::generate(glm::vec2 chunkID)
