@@ -21,8 +21,17 @@ void terrainGenerator::setUp(dataObjects * dataObjects)
 		sizes.push_back(sizeof(float));
 	}
 
+	struct UBO {
+		float value = 42.f;
+		float value2 = 33.f;
+	};
+
+	UBO ubo;
+	sizes.push_back(sizeof(UBO));
+
 	comp = new Computer(&device, &physicalDevice, &dataObjectptr->computeQueue, "../../Vulkan/Shaders/test.spv", sizes);
 	comp->populateBuffer(0, input);
+	comp->populateBuffer(2, &ubo);
 	comp->run();
 	float *result = new float[1];
 	result = (float*)comp->readBuffer(1);
