@@ -12,18 +12,23 @@ void terrainGenerator::setUp(dataObjects * dataObjects)
 	auto physicalDevice = dataObjects->physicalDevice;
 	auto instance = dataObjects->instance;
 	auto device = dataObjects->device;
-	float *input = new float[1];
+
+	int size = 5;
+	float *input = new float[size];
 	srand(time(NULL));
-	input[0] = rand() % 100;
+
+	for (int i = 0; i < size; i++) {
+		input[i] = rand() % 100;
+	}
 
 	std::vector<uint32_t> sizes;
 	for (int i = 0; i < 2; i++) {
-		sizes.push_back(sizeof(float));
+		sizes.push_back(sizeof(float) * size);
 	}
 
 	struct UBO {
-		float value = 42.f;
-		float value2 = 33.f;
+		float value = 3.f;
+		float value2 = 2.f;
 	};
 
 	UBO ubo;
@@ -33,10 +38,20 @@ void terrainGenerator::setUp(dataObjects * dataObjects)
 	comp->populateBuffer(0, input);
 	comp->populateBuffer(2, &ubo);
 	comp->run();
-	float *result = new float[1];
+
+	float *result = new float[size];
 	result = (float*)comp->readBuffer(1);
-	std::cout << "\nCompute expected result: " << input[0] + 1 <<"\n\n";
-	std::cout << "\nCompute shader result: " << result[0] << "\n\n";
+
+	std::cout << "\nCompute expected result:\n";
+	for (int i = 0; i < size; i++) {
+		std::cout << (input[i] + ubo.value) * ubo.value2 << " ";
+	}
+
+	std::cout << "\nCompute shader result:\n";
+	for (int i = 0; i < size; i++) {
+		std::cout << result[i] << " ";
+	}
+	std::cout << "\n";
 }
 
 void terrainGenerator::generate(glm::vec2 chunkID)

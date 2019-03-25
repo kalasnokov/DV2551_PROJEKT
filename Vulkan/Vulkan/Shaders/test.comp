@@ -19,7 +19,7 @@ layout(binding = 2) uniform UBO {
 
 void main() 
 {
-  if(gl_GlobalInvocationID.x >= 1)
+  if(gl_GlobalInvocationID.x >= 5)
 	return;
-	outvar[0] = UFV.value2;
+	outvar[gl_GlobalInvocationID.x] = (invar[gl_GlobalInvocationID.x] + UFV.value) * UFV.value2;
 }

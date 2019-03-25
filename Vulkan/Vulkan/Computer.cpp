@@ -115,7 +115,7 @@ void Computer::commandBufferSetup() {
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSet, 0, 0);
 
-		vkCmdDispatch(commandBuffer, 1, 1, 1);
+		vkCmdDispatch(commandBuffer, 5, 1, 1);//needs more workers?
 
 	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
 		throw std::runtime_error("COMPUTER ERROR: FAILED TO END COMMAND BUFFER!");
