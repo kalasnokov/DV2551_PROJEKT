@@ -60,11 +60,12 @@ void terrainGenerator::setUp(dataObjects * dataObjects)
 	}ubo;
 	ubo.seed = this->seed;
 	ubo.chunkID = this->chunkBuffer.chunkID;
+	sizes.push_back(chunkBuffer.mem);
 	sizes.push_back(sizeof(UBO));
 	comp = new Computer(&device, &physicalDevice, &dataObjectptr->computeQueue, "../../Vulkan/Shaders/heightmap.spv", sizes);
-	comp->populateBuffer(2, &ubo);
+	comp->populateBuffer(1, &ubo);
 	comp->run();
-	chunkBuffer.buffer = (float*)comp->readBuffer(1);
+	chunkBuffer.buffer = (float*)comp->readBuffer(0);
 }
 
 void terrainGenerator::generate(glm::vec2 chunkID)
