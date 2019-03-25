@@ -20,16 +20,44 @@ struct chunkArray
 		delete buffer;
 	}
 };
+
 class terrainGenerator
 {
 private:
 	float seed;
 	Computer *comp;
+
+	Computer *meshComp;
+
 	dataObjects *dataObjectptr;
 	chunkArray chunkBuffer;
+
+	int chunkSize;
+
+	struct UBO { //Uniform Buffer Object
+		float seed;
+		uint32_t chunkSize;
+		uint32_t idX;
+		uint32_t idY;
+	} ubo;
+
+	struct VRO { //Vertex Return Object
+		glm::vec3 vertex;
+		float nan1; //Don't mind me
+		glm::vec3 color;
+		float nan2; //Don't mind me either, just fixing the alignment
+	} vro;
+
+	struct CMUBO { //Compute Mesh Uniform Buffer Object
+		uint32_t realWorldDistance;
+		uint32_t chunkSize;
+	} cmubo;
+
 public:
-	void setUp(dataObjects *dataObjects);
+
+	void setUp(dataObjects *dataObjects, int chunkSize);
 	void generate(glm::vec2 chunkID);
+	std::vector<uint16_t> generateIndices();
 	inline chunkArray *getChunkArray()
 	{
 		return &chunkBuffer;

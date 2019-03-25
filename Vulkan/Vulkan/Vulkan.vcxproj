@@ -196,6 +196,7 @@
     <None Include="Shaders\computeMesh.comp" />
     <None Include="Shaders\fragment.frag" />
     <None Include="Shaders\heightmap.comp" />
+    <None Include="Shaders\makeMesh.comp" />
     <None Include="Shaders\test.comp" />
     <None Include="Shaders\vertex.vert" />
   </ItemGroup>

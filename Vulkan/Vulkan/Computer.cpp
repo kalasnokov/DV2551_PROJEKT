@@ -2,10 +2,11 @@
 #include "Computer.h"
 
 
-Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* queue, std::string shaderLoc, std::vector<uint32_t> bufferSizes){
+Computer::Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* queue, std::string shaderLoc, std::vector<uint32_t> bufferSizes, glm::vec3 workForce){
 	this->device = device;
 	this->physicalDevice = physicalDevice;
 	this->queue = queue;
+	this->workForce = workForce;
 
 	for (int i = 0; i < bufferSizes.size(); i++) {
 		bufferInfo info;
@@ -115,7 +116,7 @@ void Computer::commandBufferSetup() {
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSet, 0, 0);
 
-		vkCmdDispatch(commandBuffer, 9, 1, 1);//needs more workers
+		vkCmdDispatch(commandBuffer, workForce.x, workForce.y, workForce.z);
 
 	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
 		throw std::runtime_error("COMPUTER ERROR: FAILED TO END COMMAND BUFFER!");

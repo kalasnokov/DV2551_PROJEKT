@@ -146,7 +146,11 @@ public:
 		threadPool pool; //causes abort() call on exit
 		std::cout << "Initialization successful.\n";
 		DO.computeQueue = computeQueue;
-		generator.setUp(&DO);
+
+		int chunkSize = 8;
+		generator.setUp(&DO, chunkSize);
+		generator.generate(glm::vec2(2,3));
+
 		p.init(window);
 
 		//Computer* computer = new Computer(&DO.device, &DO.physicalDevice, &computeQueue, "../../Vulkan/Shaders/computeMesh.spv", 128 * sizeof(int), 128 * sizeof(int));

@@ -5,7 +5,7 @@
 class Computer
 {
 public:
-	Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* queue, std::string shaderLoc, std::vector<uint32_t> bufferSizes);
+	Computer(VkDevice* device, VkPhysicalDevice* physicalDevice, VkQueue* queue, std::string shaderLoc, std::vector<uint32_t> bufferSizes, glm::vec3 workForce);
 
 	void * readBuffer(int loc);
 
@@ -58,5 +58,7 @@ private:
 	VkShaderModule shader;
 
 	std::vector<bufferInfo> bufferStructs;
+
+	glm::vec3 workForce;
 };
 

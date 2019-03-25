@@ -76,5 +76,8 @@
     <None Include="Shaders\test.comp">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\makeMesh.comp">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
