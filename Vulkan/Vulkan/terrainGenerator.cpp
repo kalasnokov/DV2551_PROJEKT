@@ -29,7 +29,7 @@ void terrainGenerator::setUp(dataObjects * dataObjects, int chunkSize) {
 
 	sizes.clear();
 	sizes.push_back(size * sizeof(float));
-	sizes.push_back(9 * 1024 * 1024 * sizeof(VRO));
+	sizes.push_back(9 * chunkSize * chunkSize * sizeof(VRO));
 	sizes.push_back(sizeof(CMUBO));
 
 	cmubo.chunkSize = (uint32_t)chunkSize;
@@ -52,9 +52,9 @@ void terrainGenerator::generate(glm::vec2 chunkID) {
 	}
 	std::cout << "\n\n";
 	for (int i = 0; i < 9; i++) {
-		for (int x = 0; x < 8; x++) {
-			for (int y = 0; y < 8; y++) {
-				std::cout << result[i * chunkSize * chunkSize + x * 8 + y] << " ";
+		for (int x = 0; x < chunkSize; x++) {
+			for (int y = 0; y < chunkSize; y++) {
+				std::cout << result[i * chunkSize * chunkSize + x * chunkSize + y] << " ";
 			}
 			std::cout << "\n";
 		}
@@ -66,33 +66,35 @@ void terrainGenerator::generate(glm::vec2 chunkID) {
 	meshComp->populateBuffer(2, &cmubo);
 	meshComp->run();
 
-	VRO* VROResult = new VRO[1024 * 1024];
+	VRO* VROResult = new VRO[chunkSize * chunkSize];
 	VROResult = (VRO*)meshComp->readBuffer(1);
 
 	for (int i = 0; i < 10; i++) {
 		std::cout << "(" << VROResult[i].vertex.x << ", " << VROResult[i].vertex.y << ", " << VROResult[i].vertex.z << "), (" << VROResult[i].color.x << ", " << VROResult[i].color.y << ", " << VROResult[i].color.z << ")\n";
 	}
 	std::cout << "\n";
-	for (int i = 0; i < 9 * 1024 * 1024; i++) {
+	for (int i = 0; i < 9 * chunkSize * chunkSize; i++) {
 		if (VROResult[i].vertex.x != 0 || VROResult[i].vertex.y != 0 || VROResult[i].vertex.z != 0) {
 			std::cout << "(" << VROResult[i].vertex.x << ", " << VROResult[i].vertex.y << ", " << VROResult[i].vertex.z << "), (" << VROResult[i].color.x << ", " << VROResult[i].color.y << ", " << VROResult[i].color.z << ")\n";
 		}
 	}
-	//chunkBuffer.buffer = (float*)comp->readOutBuffer();
 }
 
 std::vector<uint16_t> terrainGenerator::generateIndices() {
 	std::vector<uint16_t> indices;
 	int quads = chunkSize - 1;
-	for (int i = 0; i < quads; i++) {
-		for (int y = 0; y < quads; y++) {
+	for (int m = 0; m < 9; m++) {
+		int mPos = m * chunkSize * chunkSize;
+		for (int i = 0; i < quads; i++) {
 			int yPos = chunkSize * i;
-			indices.push_back(yPos + y);
-			indices.push_back(yPos + chunkSize + y);
-			indices.push_back(yPos + chunkSize + y + 1);
-			indices.push_back(yPos + chunkSize + y + 1);
-			indices.push_back(yPos + y);
-			indices.push_back(yPos + y + 1);
+			for (int y = 0; y < quads; y++) {
+				indices.push_back(mPos + yPos + y);
+				indices.push_back(mPos + yPos + chunkSize + y);
+				indices.push_back(mPos + yPos + chunkSize + y + 1);
+				indices.push_back(mPos + yPos + chunkSize + y + 1);
+				indices.push_back(mPos + yPos + y);
+				indices.push_back(mPos + yPos + y + 1);
+			}
 		}
 	}
 	return indices;
