@@ -2,70 +2,51 @@
 #include "terrainGenerator.hpp"
 #include <limits>
 #include <iostream>
-
+#include <ctime>
 
 void terrainGenerator::setUp(dataObjects * dataObjects)
 {
-	srand((unsigned)time_t(NULL));
-	seed = std::numeric_limits<float>::min() + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (std::numeric_limits<float>::max() - std::numeric_limits<float>::min())));
+	srand((unsigned)std::time(NULL));
+	this->seed = rand() % 100000;
 	dataObjectptr = dataObjects;
 	auto physicalDevice = dataObjects->physicalDevice;
 	auto instance = dataObjects->instance;
 	auto device = dataObjects->device;
 
-	/*int size = 5;
-	float *input = new float[size];
-	srand(time(NULL));
-
-	for (int i = 0; i < size; i++) {
-		input[i] = rand() % 100;
-	}
-
+	int size = 8 * 8 * 9;
 	std::vector<uint32_t> sizes;
-	for (int i = 0; i < 2; i++) {
-		sizes.push_back(sizeof(float) * size);
-	}
+	sizes.push_back(size * sizeof(float));
 
 	struct UBO {
-		float value = 3.f;
-		float value2 = 2.f;
-	};
+		float seed;
+		uint32_t idX;
+		uint32_t idY;
+	} ubo;
+	std::cout << "Seed: " << this->seed << "\n";
+	ubo.seed = this->seed;
+	ubo.idX = 2;
+	ubo.idY = 3;
 
-	UBO ubo;
 	sizes.push_back(sizeof(UBO));
 
 	comp = new Computer(&device, &physicalDevice, &dataObjectptr->computeQueue, "../../Vulkan/Shaders/test.spv", sizes);
-	comp->populateBuffer(0, input);
-	comp->populateBuffer(2, &ubo);
+	comp->populateBuffer(1, &ubo);
 	comp->run();
 
 	float *result = new float[size];
-	result = (float*)comp->readBuffer(1);
-
-	std::cout << "\nCompute expected result:\n";
-	for (int i = 0; i < size; i++) {
-		std::cout << (input[i] + ubo.value) * ubo.value2 << " ";
-	}
+	result = (float*)comp->readBuffer(0);
 
 	std::cout << "\nCompute shader result:\n";
-	for (int i = 0; i < size; i++) {
-		std::cout << result[i] << " ";
+	for (int i = 0; i < 9; i++) {
+		for (int x = 0; x < 8; x++) {
+			for (int y = 0; y < 8; y++) {
+				std::cout << result[i + x * 8 + y] << " ";
+			}
+			std::cout << "\n";
+		}
+		std::cout << "\n";
 	}
-	std::cout << "\n";*/
-	std::vector<uint32_t> sizes;
-	struct UBO
-	{
-		float seed;
-		glm::vec2 chunkID;
-	}ubo;
-	ubo.seed = this->seed;
-	ubo.chunkID = this->chunkBuffer.chunkID;
-	sizes.push_back(chunkBuffer.mem);
-	sizes.push_back(sizeof(UBO));
-	comp = new Computer(&device, &physicalDevice, &dataObjectptr->computeQueue, "../../Vulkan/Shaders/heightmap.spv", sizes);
-	comp->populateBuffer(1, &ubo);
-	comp->run();
-	chunkBuffer.buffer = (float*)comp->readBuffer(0);
+	std::cout << "\n";
 }
 
 void terrainGenerator::generate(glm::vec2 chunkID)

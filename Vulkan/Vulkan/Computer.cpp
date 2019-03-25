@@ -115,7 +115,7 @@ void Computer::commandBufferSetup() {
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSet, 0, 0);
 
-		vkCmdDispatch(commandBuffer, 5, 1, 1);//needs more workers?
+		vkCmdDispatch(commandBuffer, 9, 1, 1);//needs more workers
 
 	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
 		throw std::runtime_error("COMPUTER ERROR: FAILED TO END COMMAND BUFFER!");
@@ -149,7 +149,7 @@ void Computer::descriptorLayoutSetup() {
 
 void Computer::descriptorSetup() {
 	VkDescriptorPoolSize descriptorPoolSize = {};
-	descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	descriptorPoolSize.descriptorCount = bufferStructs.size();
 
 	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};

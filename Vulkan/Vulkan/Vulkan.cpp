@@ -222,8 +222,10 @@ private:
 
 		vkResetFences(DO.device, 1, &inFlightFences[currentFrame]);
 
-		if (vkQueueSubmit(DO.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
-			throw std::runtime_error("failed to submit draw command buffer!");
+		int res = vkQueueSubmit(DO.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]);
+		if (res != VK_SUCCESS) {
+			std::cout << "Error: " << res << "\n";
+			throw std::runtime_error("Failed to submit draw command buffer!");
 		}
 
 		VkPresentInfoKHR presentInfo = {};
