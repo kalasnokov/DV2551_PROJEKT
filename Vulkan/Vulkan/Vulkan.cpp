@@ -147,9 +147,14 @@ public:
 		std::cout << "Initialization successful.\n";
 		DO.computeQueue = computeQueue;
 
-		int chunkSize = 8;
+		int chunkSize = 4;
 		generator.setUp(&DO, chunkSize);
 		generator.generate(glm::vec2(2,3));
+		std::vector<uint16_t> ind = generator.generateIndices();
+
+		for (int i = 0; i < ind.size(); i++) {
+			std::cout << ind.at(i) << ", ";
+		}
 
 		p.init(window);
 

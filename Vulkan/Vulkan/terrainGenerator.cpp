@@ -82,8 +82,20 @@ void terrainGenerator::generate(glm::vec2 chunkID) {
 }
 
 std::vector<uint16_t> terrainGenerator::generateIndices() {
-	std::vector<uint16_t> empty;
-	return empty;
+	std::vector<uint16_t> indices;
+	int quads = chunkSize - 1;
+	for (int i = 0; i < quads; i++) {
+		for (int y = 0; y < quads; y++) {
+			int yPos = chunkSize * i;
+			indices.push_back(yPos + y);
+			indices.push_back(yPos + chunkSize + y);
+			indices.push_back(yPos + chunkSize + y + 1);
+			indices.push_back(yPos + chunkSize + y + 1);
+			indices.push_back(yPos + y);
+			indices.push_back(yPos + y + 1);
+		}
+	}
+	return indices;
 }
 
 terrainGenerator::terrainGenerator()
