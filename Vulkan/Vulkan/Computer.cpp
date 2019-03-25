@@ -149,7 +149,7 @@ void Computer::descriptorLayoutSetup() {
 
 void Computer::descriptorSetup() {
 	VkDescriptorPoolSize descriptorPoolSize = {};
-	descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+	descriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	descriptorPoolSize.descriptorCount = bufferStructs.size();
 
 	VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
