@@ -3,6 +3,7 @@
 #include <limits>
 #include <iostream>
 #include <ctime>
+#include <chrono>
 
 void terrainGenerator::setUp(dataObjects * dataObjects, int chunkSize) {
 	this->chunkSize = chunkSize;
@@ -42,10 +43,11 @@ void terrainGenerator::setUp(dataObjects * dataObjects, int chunkSize) {
 std::vector<Vertex> terrainGenerator::generate(glm::vec2 chunkID) {
 	//Set chunkID as parameter allong with seed
 	//Chunk ID is where in the grid the player is
+	auto start = std::chrono::high_resolution_clock::now();
 	comp->run();
 	float *result = new float[chunkSize * chunkSize * 9];
 	result = (float*)comp->readBuffer(0);
-
+	auto finish = std::chrono::high_resolution_clock::now();
 	std::cout << "\nCompute shader result:\n";
 	for (int i = 0; i < 9; i++) {
 		std::cout << result[i] << " ";
@@ -72,6 +74,8 @@ std::vector<Vertex> terrainGenerator::generate(glm::vec2 chunkID) {
 	for (int i = 0; i < 10; i++) {
 		std::cout << "(" << VROResult[i].vertex.x << ", " << VROResult[i].vertex.y << ", " << VROResult[i].vertex.z << "), (" << VROResult[i].color.x << ", " << VROResult[i].color.y << ", " << VROResult[i].color.z << ")\n";
 	}
+	std::chrono::duration<double> elapsed = finish - start;
+	std::cout << "Generating world took: " << elapsed.count() << "s" << std::endl;
 	/*
 	std::cout << "\n";
 	for (int i = 0; i < 9 * chunkSize * chunkSize; i++) {
