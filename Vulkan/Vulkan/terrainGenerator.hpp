@@ -57,7 +57,7 @@ public:
 
 	void setUp(dataObjects *dataObjects, int chunkSize);
 	std::vector<Vertex> generate(glm::vec2 chunkID);
-	std::vector<uint32_t> generateIndices();
+	std::vector<uint32_t> generateIndices(int chunkSize);
 	inline chunkArray *getChunkArray()
 	{
 		return &chunkBuffer;

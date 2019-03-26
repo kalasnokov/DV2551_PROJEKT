@@ -44,11 +44,12 @@ std::vector<Vertex> terrainGenerator::generate(glm::vec2 chunkID) {
 	//Set chunkID as parameter allong with seed
 	//Chunk ID is where in the grid the player is
 	auto start = std::chrono::high_resolution_clock::now();
-	comp->run();
+	//comp->run();
 	float *result = new float[chunkSize * chunkSize * 9];
 	result = (float*)comp->readBuffer(0);
 	auto finish = std::chrono::high_resolution_clock::now();
 	std::cout << "\nCompute shader result:\n";
+	/*
 	for (int i = 0; i < 9; i++) {
 		std::cout << result[i] << " ";
 	}
@@ -63,16 +64,16 @@ std::vector<Vertex> terrainGenerator::generate(glm::vec2 chunkID) {
 		std::cout << "\n";
 	}
 	std::cout << "\n";
-
+	*/
 	meshComp->populateBuffer(0, result);
-	meshComp->populateBuffer(2, &cmubo);
+	meshComp->populateBuffer(2, &ubo);
 	meshComp->run();
 
 	VRO* VROResult = new VRO[chunkSize * chunkSize];
 	VROResult = (VRO*)meshComp->readBuffer(1);
 	
 	for (int i = 0; i < 10; i++) {
-		std::cout << "(" << VROResult[i].vertex.x << ", " << VROResult[i].vertex.y << ", " << VROResult[i].vertex.z << "), (" << VROResult[i].color.x << ", " << VROResult[i].color.y << ", " << VROResult[i].color.z << ")\n";
+		//std::cout << "(" << VROResult[i].vertex.x << ", " << VROResult[i].vertex.y << ", " << VROResult[i].vertex.z << "), (" << VROResult[i].color.x << ", " << VROResult[i].color.y << ", " << VROResult[i].color.z << ")\n";
 	}
 	std::chrono::duration<double> elapsed = finish - start;
 	std::cout << "Generating world took: " << elapsed.count() << "s" << std::endl;
@@ -88,23 +89,31 @@ std::vector<Vertex> terrainGenerator::generate(glm::vec2 chunkID) {
 	for (int i = 0; i < 9 * chunkSize * chunkSize; i++) {
 		vertices.push_back({ {VROResult[i].vertex.x, VROResult[i].vertex.y, VROResult[i].vertex.z}, {VROResult[i].color.x, VROResult[i].color.y, VROResult[i].color.z} });
 	}
+	
 	return vertices;
 }
 
-std::vector<uint32_t> terrainGenerator::generateIndices() {
+std::vector<uint32_t> terrainGenerator::generateIndices(int chunkSize) {
 	std::vector<uint32_t> indices;
 	int quads = chunkSize - 1;
-	for (int m = 0; m < 9; m++) {
-		int mPos = m * chunkSize * chunkSize;
-		for (int i = 0; i < quads; i++) {
-			int yPos = chunkSize * i;
-			for (int y = 0; y < quads; y++) {
-				indices.push_back(mPos + yPos + y);
-				indices.push_back(mPos + yPos + chunkSize + y);
-				indices.push_back(mPos + yPos + chunkSize + y + 1);
-				indices.push_back(mPos + yPos + chunkSize + y + 1);
-				indices.push_back(mPos + yPos + y);
-				indices.push_back(mPos + yPos + y + 1);
+
+	std::cout << "CS: " << chunkSize << "\n";
+	std::cout << "Q: " << quads << "\n";
+
+	for (int ty = 0; ty < 3; ty++) {
+		int tyPos = ty * chunkSize * chunkSize * 3;
+		for (int tx = 0; tx < 3; tx++) {
+			int txPos = tx * chunkSize * chunkSize;
+			for (int vy = 0; vy < quads; vy++) {
+				int vyPos = vy * chunkSize;
+				for (int vx = 0; vx < quads; vx++) {
+					indices.push_back(tyPos + txPos + vyPos + chunkSize + vx);
+					indices.push_back(tyPos + txPos + vyPos + vx);
+					indices.push_back(tyPos + txPos + vyPos + chunkSize + vx + 1);
+					indices.push_back(tyPos + txPos + vyPos + chunkSize + vx + 1);
+					indices.push_back(tyPos + txPos + vyPos + vx);
+					indices.push_back(tyPos + txPos + vyPos + vx + 1);
+				}
 			}
 		}
 	}
