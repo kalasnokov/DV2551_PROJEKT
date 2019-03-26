@@ -31,6 +31,8 @@ void terrainGenerator::setUp(dataObjects * dataObjects, int chunkSize) {
 
 std::vector<Vertex> terrainGenerator::generate(glm::vec2 chunkID) {
 	auto start = std::chrono::high_resolution_clock::now();
+	ubo.idX = chunkID.x;
+	ubo.idY = chunkID.y;
 	meshComp->populateBuffer(1, &ubo);
 	meshComp->run();
 

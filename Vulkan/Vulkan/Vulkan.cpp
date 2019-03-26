@@ -118,10 +118,6 @@ public:
 		DO.computeQueue = computeQueue;
 
 		generator.setUp(&DO, chunkSize);
-		vertices.clear();
-		vertices = generator.generate(glm::vec2(0, 0));
-
-		loadVertexBuffer();
 
 		p.init(window);
 
@@ -153,7 +149,15 @@ private:
 			prevtime = std::chrono::high_resolution_clock::now();
 			frameCount++;
 			glfwPollEvents();
+
 			vp = p.update();
+
+			vertices.clear();
+			std::cout << p.getPlayerPos().x << " : " << p.getPlayerPos().y << "\n";
+			vertices = generator.generate(glm::vec2(p.getPlayerPos().x, p.getPlayerPos().z));
+
+			loadVertexBuffer();
+
 			drawFrame();
 			auto now = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double> elapsed = now - prevtime;

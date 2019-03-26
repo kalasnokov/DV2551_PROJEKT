@@ -58,7 +58,7 @@ public:
 	{
 		return chunkID;
 	}
-	inline glm::vec3 getPlayerPos()
+	glm::vec3 getPlayerPos()
 	{
 		return pos;
 	}
@@ -83,7 +83,7 @@ public:
 		auto mat = vp.view;
 		glm::vec3 forward(mat[0][2], mat[1][2], mat[2][2]);
 		glm::vec3 strafe(mat[0][0], mat[1][0], mat[2][0]);
-		front += (-dz * forward + dx * strafe) * cameraSpeed;
+		front += (-dz * forward + dx * strafe) * cameraSpeed * 20.f;
 		this->updateView();
 		//glfwSetCursorPos(window, double(width) / 2.0, double(height) / 2.0);
 		return &vp;
