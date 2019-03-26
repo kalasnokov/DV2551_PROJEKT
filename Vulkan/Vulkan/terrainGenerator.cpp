@@ -30,7 +30,6 @@ void terrainGenerator::setUp(dataObjects * dataObjects, int chunkSize) {
 }
 
 std::vector<Vertex> terrainGenerator::generate(glm::vec2 chunkID) {
-	auto start = std::chrono::high_resolution_clock::now();
 	ubo.idX = chunkID.x;
 	ubo.idY = chunkID.y;
 
@@ -40,10 +39,6 @@ std::vector<Vertex> terrainGenerator::generate(glm::vec2 chunkID) {
 	VROResult = (Vertex*)meshComp->readBuffer(0);
 
 	std::vector<Vertex> vertices(VROResult, VROResult + chunkSize * chunkSize * 9);
-
-	auto finish = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = finish - start;
-	std::cout << "Generating world took: " << elapsed.count() << "s" << std::endl;
 
 	return vertices;
 }

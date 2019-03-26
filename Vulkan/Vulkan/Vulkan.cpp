@@ -142,9 +142,15 @@ private:
 		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 	}
 
+	std::chrono::time_point<std::chrono::steady_clock> startTime;
+	std::chrono::time_point<std::chrono::steady_clock> avgTime;
+
 	void mainLoop() {
+		startTime = std::chrono::high_resolution_clock::now();
+
 		auto prevtime = std::chrono::high_resolution_clock::now();
 		unsigned frameCount = 0;
+
 		while (!glfwWindowShouldClose(window)) {
 			prevtime = std::chrono::high_resolution_clock::now();
 			frameCount++;
@@ -152,15 +158,22 @@ private:
 
 			vp = p.update();
 
+
+			auto start = std::chrono::high_resolution_clock::now();
+
 			vertices.clear();
 			vertices.resize(0);
 			vertices = generator.generate(glm::vec2(p.getPlayerPos().x, p.getPlayerPos().z));
-
 			loadVertexBuffer();
+
+			auto finish = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> elapsed = finish - start;
+			std::cout << "Generating world took: " << elapsed.count() << "s" << std::endl;
 
 			drawFrame();
 			auto now = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double> elapsed = now - prevtime;
+
 			std::string title = "Vulkan Terrain-Generator " + std::to_string(elapsed.count());
 			glfwSetWindowTitle(window, title.c_str());
 		}
