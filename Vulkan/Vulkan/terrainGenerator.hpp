@@ -37,8 +37,8 @@ private:
 	struct UBO { //Uniform Buffer Object
 		float seed;
 		uint32_t chunkSize;
-		uint32_t idX;
-		uint32_t idY;
+		float idX;
+		float idY;
 	} ubo;
 
 	struct VRO { //Vertex Return Object
