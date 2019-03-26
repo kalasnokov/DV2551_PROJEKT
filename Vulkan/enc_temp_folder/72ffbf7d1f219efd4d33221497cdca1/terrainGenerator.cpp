@@ -82,7 +82,7 @@ std::vector<Vertex> terrainGenerator::generate(glm::vec2 chunkID) {
 	*/
 	std::vector<Vertex> vertices;
 	for (int i = 0; i < 9 * chunkSize * chunkSize; i++) {
-		vertices.push_back({ {VROResult[i].vertex.x, VROResult[i].vertex.y, VROResult[i].vertex.z}, {VROResult[i].color.x, VROResult[i].color.y, VROResult[i].color.z} });
+		vertices.push_back({ {VROResult[i].vertex.x, VROResult[i].vertex.z, VROResult[i].vertex.y}, {VROResult[i].color.x, VROResult[i].color.y, VROResult[i].color.z} });
 	}
 	return vertices;
 }

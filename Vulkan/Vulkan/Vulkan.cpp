@@ -30,6 +30,8 @@
 
 #include "computer.h"
 #include "player.hpp"
+#include "mesh.h"
+
 using namespace std::chrono_literals;
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -65,51 +67,9 @@ const std::vector<const char*> validationLayers = {
 	"VK_LAYER_LUNARG_standard_validation"
 };
 
-struct Vertex {
-	glm::vec3 pos;
-	glm::vec3 color;
+std::vector<Vertex> vertices;
 
-	static VkVertexInputBindingDescription getBindingDescription() {
-		VkVertexInputBindingDescription bindingDescription = {};
-		bindingDescription.binding = 0;
-		bindingDescription.stride = sizeof(Vertex);
-		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-		return bindingDescription;
-	}
-
-	static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
-		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = {};
-
-		attributeDescriptions[0].binding = 0;
-		attributeDescriptions[0].location = 0;
-		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-		attributeDescriptions[1].binding = 0;
-		attributeDescriptions[1].location = 1;
-		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(Vertex, color);
-
-		return attributeDescriptions;
-	}
-};
-
-const std::vector<Vertex> vertices = {
-	{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
-	{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-	{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
-	{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}},
-
-	{{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-	{{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-	{{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}},
-	{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}}
-};
-
-const std::vector<uint16_t> indices = {
-	0, 1, 2, 2, 3, 0,
-	4, 5, 6, 6, 7, 4
-};
+std::vector<uint32_t> indices;
 
 struct UniformBufferObject {
 	glm::mat4 model;
@@ -141,20 +101,33 @@ public:
 		setExecutablePath();
 		checkExtentions();
 
+		//setup vertex objects here to set correct buffer sizes
+		Mesh mesh;
+		mesh.makeSimpleMesh(4 * 3);
+		vertices = mesh.getVertices();
+		indices = mesh.getIndices();
+
+
 		initWindow();
 		initVulkan();
 		threadPool pool; //causes abort() call on exit
 		std::cout << "Initialization successful.\n";
+
+		//start first terrain gen pass
 		DO.computeQueue = computeQueue;
 
-		int chunkSize = 4;
+		int chunkSize = 32;
 		generator.setUp(&DO, chunkSize);
-		generator.generate(glm::vec2(2,3));
-		std::vector<uint16_t> ind = generator.generateIndices();
+		vertices = generator.generate(glm::vec2(0, 0));
 
+		loadVertexBuffer();
+
+		/*
+		std::vector<uint32_t> ind = generator.generateIndices();
 		for (int i = 0; i < ind.size(); i++) {
 			std::cout << ind.at(i) << ", ";
 		}
+		*/
 
 		p.init(window);
 
@@ -339,6 +312,30 @@ private:
 	}
 
 	//SUB FUNCTIONS
+	void loadVertexBuffer() {
+		VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+		VkBuffer stagingBuffer;
+		VkDeviceMemory stagingBufferMem;
+
+		VkBufferCreateInfo transferBufferInfo = {};
+		transferBufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		transferBufferInfo.size = bufferSize;
+		transferBufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+		transferBufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		VHF::createBuffer(DO.device, DO.physicalDevice, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMem, transferBufferInfo);
+
+		void* data;
+		vkMapMemory(DO.device, stagingBufferMem, 0, bufferSize, 0, &data);
+		memcpy(data, vertices.data(), (size_t)bufferSize);
+		vkUnmapMemory(DO.device, stagingBufferMem);
+
+		VHF::cpyBuf(DO.device, DO.commandPool, DO.graphicsQueue, stagingBuffer, vertexBuffer, bufferSize);
+
+		vkDestroyBuffer(DO.device, stagingBuffer, nullptr);
+		vkFreeMemory(DO.device, stagingBufferMem, nullptr);
+	}
+
 	VkCommandBuffer beginSingleTimeCommands() {
 		VkCommandBufferAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -809,7 +806,7 @@ private:
 				VkDeviceSize offsets[] = { 0 };
 
 				vkCmdBindVertexBuffers(DO.commandBuffers[i], 0, 1, vertexBuffers, offsets);
-				vkCmdBindIndexBuffer(DO.commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+				vkCmdBindIndexBuffer(DO.commandBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 				vkCmdBindDescriptorSets(DO.commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &DO.descriptorSets[i], 0, nullptr);
 
 				vkCmdDrawIndexed(DO.commandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
