@@ -83,10 +83,10 @@ void main() {
 	uint yPos = gl_GlobalInvocationID.y * UFV.chunkSize;
 	uint xPos = gl_GlobalInvocationID.z;
 
-	float scale = 15.f;
+	float scale = 5.f;
 
-	float n1 = UFV.cIdx / scale + UFV.seed * float(gl_GlobalInvocationID.y + offset[gl_GlobalInvocationID.x].x * UFV.chunkSize) / scale;
-	float n2 = UFV.cIdy / scale + UFV.seed * float(gl_GlobalInvocationID.z + offset[gl_GlobalInvocationID.x].z * UFV.chunkSize) / scale;
+	float n1 = UFV.cIdx / scale + UFV.seed * float(gl_GlobalInvocationID.y + offset[gl_GlobalInvocationID.x].x * UFV.chunkSize);
+	float n2 = UFV.cIdy / scale + UFV.seed * float(gl_GlobalInvocationID.z + offset[gl_GlobalInvocationID.x].z * UFV.chunkSize);
 
 	float c1 = noise(vec2(n1, n2));
 	float c2 = noise(vec2(n1, n2));
