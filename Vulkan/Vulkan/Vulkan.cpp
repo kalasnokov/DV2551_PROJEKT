@@ -102,8 +102,9 @@ public:
 		checkExtentions();
 
 		//setup vertex objects here to set correct buffer sizes
+		int chunkSize = 32;
 		Mesh mesh;
-		mesh.makeSimpleMesh(4 * 3);
+		mesh.makeSimpleMesh(chunkSize * 3);
 		vertices = mesh.getVertices();
 		indices = mesh.getIndices();
 
@@ -116,8 +117,8 @@ public:
 		//start first terrain gen pass
 		DO.computeQueue = computeQueue;
 
-		int chunkSize = 32;
 		generator.setUp(&DO, chunkSize);
+		vertices.clear();
 		vertices = generator.generate(glm::vec2(0, 0));
 
 		loadVertexBuffer();
