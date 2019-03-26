@@ -150,6 +150,7 @@ private:
 
 		auto prevtime = std::chrono::high_resolution_clock::now();
 		std::vector<double> frameTime;
+		std::vector<double> worldGenTime;
 		unsigned numFrames = 0;
 		while (!glfwWindowShouldClose(window)) {
 			prevtime = std::chrono::high_resolution_clock::now();
@@ -167,12 +168,13 @@ private:
 
 			auto finish = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double> elapsed = finish - start;
-			std::cout << "Generating world took: " << elapsed.count() << "s" << std::endl;
+			//std::cout << "Generating world took: " << elapsed.count() << "s" << std::endl;
 
 			drawFrame();
 			auto now = std::chrono::high_resolution_clock::now();
 			std::chrono::duration<double> frameElapsed = now - prevtime;
 			frameTime.push_back(frameElapsed.count());
+			worldGenTime.push_back(elapsed.count());
 			std::string title = "Vulkan Terrain-Generator " + std::to_string(elapsed.count());
 			glfwSetWindowTitle(window, title.c_str());
 			std::chrono::duration<double> dur = now - startTime;
@@ -180,10 +182,16 @@ private:
 			if (dur.count() >= 10)
 			{
 				double time = 0.0;
+				double wtime = 0.0;
 				for (auto &t : frameTime)
 					time += t;
+				for (auto &t : worldGenTime)
+					wtime += t;
 				std::cout << "Average renderingtime per frame: " << time / frameTime.size() << "s" << std::endl;
+				std::cout << "Average worldgeneration time: " << wtime / worldGenTime.size() << "s" << std::endl;
 				frameTime.clear();
+				worldGenTime.clear();
+				startTime = now;
 			}
 		}
 
