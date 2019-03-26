@@ -58,6 +58,10 @@ public:
 	{
 		return chunkID;
 	}
+	inline glm::vec3 getPlayerPos()
+	{
+		return pos;
+	}
 	matrices *update()
 	{
 		double x = 0, y = 0;
