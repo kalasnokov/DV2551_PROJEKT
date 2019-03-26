@@ -47,7 +47,7 @@ private:
 		glm::vec3 color;
 		float nan2; //Don't mind me either, just fixing the alignment
 	} vro;
-
+	Vertex* VROResult;
 public:
 
 	void setUp(dataObjects *dataObjects, int chunkSize);

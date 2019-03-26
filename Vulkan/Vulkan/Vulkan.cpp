@@ -102,7 +102,7 @@ public:
 		checkExtentions();
 
 		//setup vertex objects here to set correct buffer sizes
-		int chunkSize = 64;
+		int chunkSize = 128;
 		Mesh mesh;
 		mesh.makeSimpleMesh(chunkSize * 3);
 		vertices = mesh.getVertices();
@@ -153,7 +153,7 @@ private:
 			vp = p.update();
 
 			vertices.clear();
-			std::cout << p.getPlayerPos().x << " : " << p.getPlayerPos().y << "\n";
+			vertices.resize(0);
 			vertices = generator.generate(glm::vec2(p.getPlayerPos().x, p.getPlayerPos().z));
 
 			loadVertexBuffer();

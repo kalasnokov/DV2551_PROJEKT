@@ -88,7 +88,7 @@ public:
 		front += (-dz * forward + dx * strafe) * cameraSpeed * 50.f;
 		this->updateView();
 		//glfwSetCursorPos(window, double(width) / 2.0, double(height) / 2.0);
-		std::cout << pos.x << ","<< pos.y << ","<< pos.z << std::endl;
+		//std::cout << pos.x << ","<< pos.y << ","<< pos.z << std::endl;
 		return &vp;
 	}
 	~player()

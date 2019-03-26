@@ -22,7 +22,7 @@ void terrainGenerator::setUp(dataObjects * dataObjects, int chunkSize) {
 	ubo.idX = 0;
 	ubo.idY = 0;
 
-	sizes.push_back(9 * chunkSize * chunkSize * sizeof(VRO));
+	sizes.push_back(9 * chunkSize * chunkSize * sizeof(Vertex));
 	sizes.push_back(sizeof(UBO));
 
 	meshComp = new Computer(&dataObjectptr->device, &dataObjectptr->physicalDevice, &dataObjectptr->computeQueue, "../../Vulkan/Shaders/makeMesh.spv", sizes, glm::vec3(9, chunkSize, chunkSize));
@@ -33,16 +33,13 @@ std::vector<Vertex> terrainGenerator::generate(glm::vec2 chunkID) {
 	auto start = std::chrono::high_resolution_clock::now();
 	ubo.idX = chunkID.x;
 	ubo.idY = chunkID.y;
+
 	meshComp->populateBuffer(1, &ubo);
 	meshComp->run();
 
-	VRO* VROResult = new VRO[chunkSize * chunkSize];
-	VROResult = (VRO*)meshComp->readBuffer(0);
+	VROResult = (Vertex*)meshComp->readBuffer(0);
 
-	std::vector<Vertex> vertices;
-	for (int i = 0; i < 9 * chunkSize * chunkSize; i++) {
-		vertices.push_back({ {VROResult[i].vertex.x, VROResult[i].vertex.y, VROResult[i].vertex.z}, {VROResult[i].color.x, VROResult[i].color.y, VROResult[i].color.z} });
-	}
+	std::vector<Vertex> vertices(VROResult, VROResult + chunkSize * chunkSize * 9);
 
 	auto finish = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = finish - start;

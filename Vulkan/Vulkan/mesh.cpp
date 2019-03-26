@@ -12,7 +12,7 @@ void Mesh::loadTerrainGenOutput(int pos, int chunkSize) {
 void Mesh::makeSimpleMesh(int dim) {
 	for (int x = 0; x < dim; x++) {
 		for (int y = 0; y < dim; y++) {
-			vertices.push_back({{x, y, 0},{1, 0, 0}});
+			vertices.push_back({{x, y, 0},0,{1, 0, 0},0});
 		}
 	}
 
