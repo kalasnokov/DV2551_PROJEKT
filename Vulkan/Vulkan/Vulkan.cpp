@@ -149,11 +149,10 @@ private:
 		startTime = std::chrono::high_resolution_clock::now();
 
 		auto prevtime = std::chrono::high_resolution_clock::now();
-		unsigned frameCount = 0;
-
+		std::vector<double> frameTime;
+		unsigned numFrames = 0;
 		while (!glfwWindowShouldClose(window)) {
 			prevtime = std::chrono::high_resolution_clock::now();
-			frameCount++;
 			glfwPollEvents();
 
 			vp = p.update();
@@ -172,10 +171,20 @@ private:
 
 			drawFrame();
 			auto now = std::chrono::high_resolution_clock::now();
-			std::chrono::duration<double> elapsed = now - prevtime;
-
+			std::chrono::duration<double> frameElapsed = now - prevtime;
+			frameTime.push_back(frameElapsed.count());
 			std::string title = "Vulkan Terrain-Generator " + std::to_string(elapsed.count());
 			glfwSetWindowTitle(window, title.c_str());
+			std::chrono::duration<double> dur = now - startTime;
+			std::cout << dur.count() << std::endl;
+			if (dur.count() >= 10)
+			{
+				double time = 0.0;
+				for (auto &t : frameTime)
+					time += t;
+				std::cout << "Average renderingtime per frame: " << time / frameTime.size() << "s" << std::endl;
+				frameTime.clear();
+			}
 		}
 
 		vkDeviceWaitIdle(DO.device);
