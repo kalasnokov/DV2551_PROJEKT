@@ -42,6 +42,8 @@ private:
 		translate = glm::translate(translate, -front);
 
 		vp.view = rotate * translate;
+		glm::mat4 tView  = glm::inverse(vp.view);
+		pos = glm::vec3(tView[3]);
 	}
 public:
 	matrices vp;
@@ -86,6 +88,7 @@ public:
 		front += (-dz * forward + dx * strafe) * cameraSpeed;
 		this->updateView();
 		//glfwSetCursorPos(window, double(width) / 2.0, double(height) / 2.0);
+		std::cout << pos.x << ","<< pos.y << ","<< pos.z << std::endl;
 		return &vp;
 	}
 	~player()
