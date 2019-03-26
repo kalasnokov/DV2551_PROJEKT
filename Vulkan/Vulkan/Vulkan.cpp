@@ -123,16 +123,7 @@ public:
 
 		loadVertexBuffer();
 
-		/*
-		std::vector<uint32_t> ind = generator.generateIndices();
-		for (int i = 0; i < ind.size(); i++) {
-			std::cout << ind.at(i) << ", ";
-		}
-		*/
-
 		p.init(window);
-
-		//Computer* computer = new Computer(&DO.device, &DO.physicalDevice, &computeQueue, "../../Vulkan/Shaders/computeMesh.spv", 128 * sizeof(int), 128 * sizeof(int));
 
 		mainLoop();
 
@@ -585,9 +576,9 @@ private:
 
 		UniformBufferObject ubo = {};
 		ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.view = vp->view; //glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		ubo.projection = vp->projection; //glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
-		ubo.projection[1][1] *= -1; //prevent upside down rendering
+		ubo.view = vp->view;
+		ubo.projection = vp->projection;
+		ubo.projection[1][1] *= -1;
 
 		
 		void* data;

@@ -48,11 +48,6 @@ private:
 		float nan2; //Don't mind me either, just fixing the alignment
 	} vro;
 
-	struct CMUBO { //Compute Mesh Uniform Buffer Object
-		uint32_t realWorldDistance;
-		uint32_t chunkSize;
-	} cmubo;
-
 public:
 
 	void setUp(dataObjects *dataObjects, int chunkSize);

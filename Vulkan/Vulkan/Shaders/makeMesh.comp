@@ -7,15 +7,11 @@ struct vertex {
 	vec3 color;
 };
 
-layout(std430, binding = 0) buffer lay0 { //Input
-	float heightmap[];
-};
-
-layout(std430, binding = 1) buffer lay1 { //Output 
+layout(std430, binding = 0) buffer lay1 { //Output 
 	vertex verticesOut[];
 }; 
 
-layout(std430, binding = 2) uniform UBO {
+layout(std430, binding = 1) uniform UBO {
 	float seed;
 	uint chunkSize;
 	uint cIdx;
@@ -89,8 +85,8 @@ void main() {
 	uint yPos = gl_GlobalInvocationID.y * UFV.chunkSize;
 	uint xPos = gl_GlobalInvocationID.z;
 
-	float n1 = float((UFV.cIdx + offset[gl_GlobalInvocationID.x].x) * UFV.chunkSize) + float((UFV.cIdy + offset[gl_GlobalInvocationID.x].z) * UFV.chunkSize) + UFV.seed * float(gl_GlobalInvocationID.y);
-	float n2 = float((UFV.cIdx + offset[gl_GlobalInvocationID.x].x) * UFV.chunkSize) + float((UFV.cIdy + offset[gl_GlobalInvocationID.x].z) * UFV.chunkSize) + UFV.seed * float(gl_GlobalInvocationID.z);
+	float n1 = float(UFV.cIdx) + float(UFV.cIdy) + UFV.seed * float(gl_GlobalInvocationID.y + offset[gl_GlobalInvocationID.x].x * UFV.chunkSize);
+	float n2 = float(UFV.cIdx) + float(UFV.cIdy) + UFV.seed * float(gl_GlobalInvocationID.z + offset[gl_GlobalInvocationID.x].z * UFV.chunkSize);
 
 	float c1 = noise(vec2(n1, n2));
 	float c2 = noise(vec2(n1, n2));
@@ -99,13 +95,13 @@ void main() {
 	float c5 = clamp(c3 + 0.3 * c4, 0.f, 100.f);
 	float c6 = pow(c5, 0.5);
 
-	float height = c6;
+	float height = c6 * 2.f;
 
 	vertex v;
 
 	v.pos = vec3(gl_GlobalInvocationID.y, height, gl_GlobalInvocationID.z) + (offset[gl_GlobalInvocationID.x] * UFV.chunkSize);
 
-	if(height >= 0.9)
+	if(height / 2.f >= 0.9)
 		v.color = vec3(0.8, 0.8, 0.8);
 	else if(height >= 0.8)
 		v.color = vec3(0.55, 0.6, 0.7);
