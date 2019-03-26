@@ -33,8 +33,15 @@ std::vector<Vertex> terrainGenerator::generate(glm::vec2 chunkID) {
 	ubo.idX = chunkID.x;
 	ubo.idY = chunkID.y;
 
+	auto start = std::chrono::high_resolution_clock::now();
+
 	meshComp->populateBuffer(1, &ubo);
 	meshComp->run();
+	
+	auto finish = std::chrono::high_resolution_clock::now();
+
+	std::chrono::duration<double> elapsed = finish - start;
+	std::cout << "GPU took: " << elapsed.count() << "s" << std::endl;
 
 	VROResult = (Vertex*)meshComp->readBuffer(0);
 
