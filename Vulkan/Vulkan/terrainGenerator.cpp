@@ -85,5 +85,5 @@ terrainGenerator::terrainGenerator()
 
 terrainGenerator::~terrainGenerator()
 {
-	delete comp;
+	delete meshComp;
 }

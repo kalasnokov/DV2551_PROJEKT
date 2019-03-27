@@ -25,7 +25,6 @@ class terrainGenerator
 {
 private:
 	float seed;
-	Computer *comp;
 
 	Computer *meshComp;
 

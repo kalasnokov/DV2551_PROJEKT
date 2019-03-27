@@ -102,7 +102,7 @@ public:
 		checkExtentions();
 
 		//setup vertex objects here to set correct buffer sizes
-		int chunkSize = 512;
+		int chunkSize = 128;
 		Mesh mesh;
 		mesh.makeSimpleMesh(chunkSize * 3);
 		vertices = mesh.getVertices();

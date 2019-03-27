@@ -231,5 +231,13 @@ void Computer::loadShader(std::string shaderLoc) {
 }
 
 Computer::~Computer() {
+	vkDestroyDescriptorPool(*device, descriptorPool, nullptr);
+	vkDestroyDescriptorSetLayout(*device, descriptorSetLayout, nullptr);
 
+	for (int i = 0; i < bufferStructs.size(); i++) {
+		vkDestroyBuffer(*device, bufferStructs.at(i).buffer, nullptr);
+		vkFreeMemory(*device, bufferStructs.at(i).bufferMem, nullptr);
+	}
+
+	vkDestroyCommandPool(*device, commandPool, nullptr);
 }
